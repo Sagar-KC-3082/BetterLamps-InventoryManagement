@@ -38,14 +38,13 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // TODO: Replace these placeholder values with your Firebase Web config
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDyE0GxoS56dVmL-Uu__CE0KXAfflhiNjg',
+    appId: '1:767753779456:web:127e273b9208570b3c9be5',
+    messagingSenderId: '767753779456',
+    projectId: 'better-lamp-inventory',
+    authDomain: 'better-lamp-inventory.firebaseapp.com',
+    storageBucket: 'better-lamp-inventory.firebasestorage.app',
   );
 
   // TODO: Replace these placeholder values with your Firebase Android config
@@ -77,13 +76,12 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.betterLampsInventory',
   );
 
-  // TODO: Replace these placeholder values with your Firebase Windows config
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDyE0GxoS56dVmL-Uu__CE0KXAfflhiNjg',
+    appId: '1:767753779456:web:127e273b9208570b3c9be5',
+    messagingSenderId: '767753779456',
+    projectId: 'better-lamp-inventory',
+    authDomain: 'better-lamp-inventory.firebaseapp.com',
+    storageBucket: 'better-lamp-inventory.firebasestorage.app',
   );
 }

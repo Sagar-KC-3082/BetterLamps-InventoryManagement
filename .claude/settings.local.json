@@ -3,7 +3,12 @@
     "allow": [
       "Bash(dir:*)",
       "Bash(flutter pub get:*)",
-      "Bash(flutter run:*)"
+      "Bash(flutter run:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(cmd /c \"flutter analyze\")",
+      "Bash(D:\\\\flutter\\\\bin\\\\flutter.bat analyze:*)",
+      "WebFetch(domain:stitch.withgoogle.com)",
+      "Bash(cmd /c \"flutter analyze lib\\\\screens\\\\inventory_screen.dart\")"
     ]
   }
 }
