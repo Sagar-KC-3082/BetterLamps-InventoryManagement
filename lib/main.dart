@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: 220,
             decoration: BoxDecoration(
-              color: context.sidebarColor,
+              color: context.cardColor,
               border: Border(
                 right: BorderSide(color: context.borderColor, width: 1),
               ),
