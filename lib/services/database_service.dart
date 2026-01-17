@@ -146,4 +146,15 @@ class DatabaseService extends ChangeNotifier {
   int get totalSalesCount => _sales.length;
 
   int get totalProductCount => _products.length;
+
+  double get totalProfit {
+    double total = 0;
+    for (final sale in _sales) {
+      final product = getProductById(sale.productId);
+      if (product != null) {
+        total += (sale.price - product.costPrice.totalCost);
+      }
+    }
+    return total;
+  }
 }

@@ -47,12 +47,51 @@ class SalesScreen extends StatelessWidget {
               ),
               Consumer<DatabaseService>(
                 builder: (context, db, child) {
-                  return ElevatedButton.icon(
-                    onPressed: db.products.isEmpty
-                        ? () => _showNoProductsDialog(context)
-                        : () => showSaleDialog(context),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Record Sale'),
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF3B82F6).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ), // Premium look
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: db.products.isEmpty
+                            ? () => _showNoProductsDialog(context)
+                            : () => showSaleDialog(context),
+                        borderRadius: BorderRadius.circular(12),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add, size: 20, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                'Record Sale',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -64,21 +103,31 @@ class SalesScreen extends StatelessWidget {
             builder: (context, db, child) {
               return Row(
                 children: [
-                  _StatCard(
-                    label: 'Total Sales',
-                    value: db.totalSalesCount.toString(),
+                  Expanded(
+                    child: _StatCard(
+                      label: 'Total Sales',
+                      value: db.totalSalesCount.toString(),
+                      color: const Color(0xFF3B82F6), // Blue
+                      backgroundImage: 'assets/images/4046534.jpg',
+                    ),
                   ),
                   const SizedBox(width: 16),
-                  _StatCard(
-                    label: 'Revenue',
-                    value: 'NRS ${db.totalSalesAmount.toStringAsFixed(0)}',
+                  Expanded(
+                    child: _StatCard(
+                      label: 'Revenue',
+                      value: 'NRS ${db.totalSalesAmount.toStringAsFixed(0)}',
+                      color: const Color(0xFF10B981), // Green
+                      backgroundImage: 'assets/images/5557528.jpg',
+                    ),
                   ),
                   const SizedBox(width: 16),
-                  _StatCard(
-                    label: 'Avg. Sale',
-                    value: db.sales.isEmpty
-                        ? 'NRS 0'
-                        : 'NRS ${(db.totalSalesAmount / db.sales.length).toStringAsFixed(0)}',
+                  Expanded(
+                    child: _StatCard(
+                      label: 'Total Profit',
+                      value: 'NRS ${db.totalProfit.toStringAsFixed(0)}',
+                      color: const Color(0xFF8B5CF6), // Purple
+                      backgroundImage: 'assets/images/6379114.jpg',
+                    ),
                   ),
                 ],
               );
@@ -133,7 +182,10 @@ class SalesScreen extends StatelessWidget {
                     children: [
                       // Header
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(color: context.borderColor),
@@ -141,11 +193,10 @@ class SalesScreen extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            const SizedBox(width: 56),
-                            Expanded(
-                              flex: 2,
+                            SizedBox(
+                              width: 40,
                               child: Text(
-                                'Product',
+                                'S.N.',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -153,8 +204,23 @@ class SalesScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            const SizedBox(width: 12),
                             Expanded(
-                              flex: 2,
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 56),
+                                child: Text(
+                                  'Product',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: context.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
                               child: Text(
                                 'Customer',
                                 style: TextStyle(
@@ -165,6 +231,18 @@ class SalesScreen extends StatelessWidget {
                               ),
                             ),
                             Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Source',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: context.textSecondary,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
                               child: Text(
                                 'Date',
                                 style: TextStyle(
@@ -174,19 +252,31 @@ class SalesScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 120,
+                            Expanded(
+                              flex: 1,
                               child: Text(
                                 'Amount',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF737373),
+                                  color: context.textSecondary,
                                 ),
-                                textAlign: TextAlign.right,
+                              ),
+                            ),
+
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Gross Profit',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: context.textSecondary,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 48),
+                            // Actions space matches row popup
                           ],
                         ),
                       ),
@@ -195,14 +285,16 @@ class SalesScreen extends StatelessWidget {
                         child: ListView.separated(
                           padding: EdgeInsets.zero,
                           itemCount: db.sales.length,
-                          separatorBuilder: (_, __) => Divider(
-                            height: 1,
-                            color: context.borderColor,
-                          ),
+                          separatorBuilder: (_, __) =>
+                              Divider(height: 1, color: context.borderColor),
                           itemBuilder: (context, index) {
                             final sale = db.sales[index];
                             final product = db.getProductById(sale.productId);
-                            return _SaleRow(sale: sale, product: product);
+                            return _SaleRow(
+                              sale: sale,
+                              product: product,
+                              index: index,
+                            );
                           },
                         ),
                       ),
@@ -237,36 +329,74 @@ class SalesScreen extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
+  final Color color;
+  final String? backgroundImage;
 
-  const _StatCard({required this.label, required this.value});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    this.color = const Color(0xFF3B82F6),
+    this.backgroundImage,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      height: 120,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: context.borderColor),
+        boxShadow: context.subtleShadow,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: context.textPrimary,
-              letterSpacing: -0.5,
+          if (backgroundImage != null)
+             Positioned.fill(
+              child: Opacity(
+                opacity: 0.15, // Low opacity for background
+                child: Image.asset(
+                  backgroundImage!,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: context.textSecondary,
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.trending_up, 
+                      size: 16,
+                      color: color,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
@@ -278,8 +408,9 @@ class _StatCard extends StatelessWidget {
 class _SaleRow extends StatefulWidget {
   final Sale sale;
   final Product? product;
+  final int index;
 
-  const _SaleRow({required this.sale, this.product});
+  const _SaleRow({required this.sale, this.product, required this.index});
 
   @override
   State<_SaleRow> createState() => _SaleRowState();
@@ -327,6 +458,9 @@ class _SaleRowState extends State<_SaleRow> {
 
   @override
   Widget build(BuildContext context) {
+    final profit =
+        widget.sale.price - (widget.product?.costPrice.totalCost ?? 0);
+
     return MouseRegion(
       onEnter: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _isHovered = true);
@@ -339,29 +473,45 @@ class _SaleRowState extends State<_SaleRow> {
         child: Container(
           color: _isHovered
               ? (context.isDarkMode
-                  ? Colors.white.withOpacity(0.02)
-                  : Colors.black.withOpacity(0.01))
+                    ? Colors.white.withOpacity(0.02)
+                    : Colors.black.withOpacity(0.01))
               : Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Row(
             children: [
-              _buildProductImage(),
-              const SizedBox(width: 16),
-              // Product
-              Expanded(
-                flex: 2,
+              SizedBox(
+                width: 40,
                 child: Text(
-                  widget.product?.name ?? 'Unknown',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                    color: context.textPrimary,
-                  ),
+                  '${widget.index + 1}',
+                  style: TextStyle(fontSize: 13, color: context.textSecondary),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 1,
+                child: Row(
+                  children: [
+                    _buildProductImage(),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        widget.product?.name ?? 'Unknown',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: context.textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Customer
+              // Customer
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -383,33 +533,44 @@ class _SaleRowState extends State<_SaleRow> {
                   ],
                 ),
               ),
+              // Source
+              Expanded(
+                flex: 1,
+                child: Text(
+                  widget.sale.source ?? '-',
+                  style: TextStyle(fontSize: 13, color: context.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               // Date
               Expanded(
+                flex: 1,
                 child: Text(
                   DateFormat('MMM d, yyyy').format(widget.sale.saleDate),
+                  style: TextStyle(fontSize: 13, color: context.textSecondary),
+                ),
+              ),
+
+              Expanded(
+                flex: 1,
+                child: Text(
+                  'NRS ${widget.sale.price.toStringAsFixed(0)}',
                   style: TextStyle(
+                    fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: context.textSecondary,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
-              // Amount
-              SizedBox(
-                width: 120,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: context.successBgColor,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'NRS ${widget.sale.price.toStringAsFixed(0)}',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                      color: context.successColor,
-                    ),
+
+              Expanded(
+                flex: 1,
+                child: Text(
+                  'NRS ${profit.toStringAsFixed(0)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: context.successColor,
                   ),
                 ),
               ),
@@ -438,8 +599,11 @@ class _SaleRowState extends State<_SaleRow> {
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit_outlined,
-                              size: 18, color: context.textSecondary),
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 18,
+                            color: context.textSecondary,
+                          ),
                           const SizedBox(width: 12),
                           const Text('Edit'),
                         ],
@@ -449,11 +613,16 @@ class _SaleRowState extends State<_SaleRow> {
                       value: 'delete',
                       child: Row(
                         children: [
-                          Icon(Icons.delete_outline,
-                              size: 18, color: context.errorColor),
+                          Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: context.errorColor,
+                          ),
                           const SizedBox(width: 12),
-                          Text('Delete',
-                              style: TextStyle(color: context.errorColor)),
+                          Text(
+                            'Delete',
+                            style: TextStyle(color: context.errorColor),
+                          ),
                         ],
                       ),
                     ),
@@ -494,5 +663,3 @@ class _SaleRowState extends State<_SaleRow> {
     );
   }
 }
-
-

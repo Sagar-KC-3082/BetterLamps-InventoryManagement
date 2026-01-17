@@ -1,13 +1,13 @@
 class Customer {
   String name;
   String phone;
-  String email;
+  String? instaId;
   String address;
 
   Customer({
     required this.name,
     required this.phone,
-    required this.email,
+    this.instaId,
     required this.address,
   });
 
@@ -15,7 +15,7 @@ class Customer {
     return {
       'name': name,
       'phone': phone,
-      'email': email,
+      'instaId': instaId,
       'address': address,
     };
   }
@@ -24,7 +24,7 @@ class Customer {
     return Customer(
       name: map['name'] as String,
       phone: map['phone'] as String,
-      email: map['email'] as String,
+      instaId: map['instaId'] as String?,
       address: map['address'] as String,
     );
   }
@@ -36,7 +36,10 @@ class Sale {
   String productId;
   double price;
   Customer customer;
+  String? source;
+  bool isFollowedUp;
   String? notes;
+  String accountSettledIn;
 
   Sale({
     required this.id,
@@ -44,6 +47,9 @@ class Sale {
     required this.productId,
     required this.price,
     required this.customer,
+    this.source,
+    this.isFollowedUp = false,
+    this.accountSettledIn = 'Sagar',
     this.notes,
   });
 
@@ -54,6 +60,9 @@ class Sale {
       'productId': productId,
       'price': price,
       'customer': customer.toMap(),
+      'source': source,
+      'isFollowedUp': isFollowedUp,
+      'accountSettledIn': accountSettledIn,
       'notes': notes,
     };
   }
@@ -65,6 +74,9 @@ class Sale {
       productId: map['productId'] as String,
       price: (map['price'] as num).toDouble(),
       customer: Customer.fromMap(map['customer'] as Map<String, dynamic>),
+      source: map['source'] as String?,
+      isFollowedUp: map['isFollowedUp'] as bool? ?? false,
+      accountSettledIn: map['accountSettledIn'] as String? ?? 'Sagar',
       notes: map['notes'] as String?,
     );
   }
@@ -75,6 +87,9 @@ class Sale {
     String? productId,
     double? price,
     Customer? customer,
+    String? source,
+    bool? isFollowedUp,
+    String? accountSettledIn,
     String? notes,
   }) {
     return Sale(
@@ -83,6 +98,9 @@ class Sale {
       productId: productId ?? this.productId,
       price: price ?? this.price,
       customer: customer ?? this.customer,
+      source: source ?? this.source,
+      isFollowedUp: isFollowedUp ?? this.isFollowedUp,
+      accountSettledIn: accountSettledIn ?? this.accountSettledIn,
       notes: notes ?? this.notes,
     );
   }
