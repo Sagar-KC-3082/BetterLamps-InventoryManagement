@@ -231,12 +231,12 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF3B82F6).withOpacity(0.1),
+                          color: context.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           isEditing ? Icons.edit_outlined : Icons.add_circle_outline,
-                          color: const Color(0xFF3B82F6),
+                          color: context.primaryColor,
                           size: 20,
                         ),
                       ),
@@ -645,32 +645,38 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        elevation: 4,
-                        shadowColor: const Color(0xFF3B82F6).withOpacity(0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: context.brandShadow,
+                        gradient: context.primaryGradient,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(isEditing ? Icons.save_outlined : Icons.add, size: 22),
-                          const SizedBox(width: 8),
-                          Text(
-                            isEditing ? 'Save Changes' : 'Add Product',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          shadowColor: Colors.transparent, // Shadow handled by container
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(isEditing ? Icons.save_outlined : Icons.add, size: 22),
+                            const SizedBox(width: 8),
+                            Text(
+                              isEditing ? 'Save Changes' : 'Add Product',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

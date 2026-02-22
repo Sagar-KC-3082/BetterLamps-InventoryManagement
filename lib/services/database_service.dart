@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/filament.dart';
 import '../models/product.dart';
 import '../models/sale.dart';
+import '../models/expense.dart';
 
 class DatabaseService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -11,20 +12,24 @@ class DatabaseService extends ChangeNotifier {
   static const String _filamentsCollection = 'filaments';
   static const String _productsCollection = 'products';
   static const String _salesCollection = 'sales';
+  static const String _expensesCollection = 'expenses';
 
   List<Filament> _filaments = [];
   List<Product> _products = [];
   List<Sale> _sales = [];
+  List<Expense> _expenses = [];
 
   List<Filament> get filaments => _filaments;
   List<Product> get products => _products;
   List<Sale> get sales => _sales;
+  List<Expense> get expenses => _expenses;
 
   Future<void> init() async {
     // Set up real-time listeners for all collections
     _listenToFilaments();
     _listenToProducts();
     _listenToSales();
+    _listenToExpenses();
   }
 
   // Real-time listeners
@@ -62,6 +67,19 @@ class DatabaseService extends ChangeNotifier {
         .listen((snapshot) {
       _sales = snapshot.docs
           .map((doc) => Sale.fromMap(doc.data()))
+          .toList();
+      notifyListeners();
+    });
+  }
+
+  void _listenToExpenses() {
+    _firestore
+        .collection(_expensesCollection)
+        .orderBy('date', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      _expenses = snapshot.docs
+          .map((doc) => Expense.fromMap(doc.data()))
           .toList();
       notifyListeners();
     });
@@ -136,6 +154,25 @@ class DatabaseService extends ChangeNotifier {
 
   Future<void> deleteSale(String id) async {
     await _firestore.collection(_salesCollection).doc(id).delete();
+  }
+
+  // Expense operations
+  Future<void> addExpense(Expense expense) async {
+    await _firestore
+        .collection(_expensesCollection)
+        .doc(expense.id)
+        .set(expense.toMap());
+  }
+
+  Future<void> updateExpense(Expense expense) async {
+    await _firestore
+        .collection(_expensesCollection)
+        .doc(expense.id)
+        .update(expense.toMap());
+  }
+
+  Future<void> deleteExpense(String id) async {
+    await _firestore.collection(_expensesCollection).doc(id).delete();
   }
 
   // Stats

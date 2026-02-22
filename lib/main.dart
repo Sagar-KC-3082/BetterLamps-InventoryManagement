@@ -9,6 +9,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/inventory_screen.dart';
 import 'screens/filaments_screen.dart';
 import 'screens/sales_screen.dart';
+import 'screens/expenses_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
       activeIcon: Icons.receipt,
       label: 'Sales',
     ),
+    _NavItem(
+      icon: Icons.account_balance_wallet_outlined,
+      activeIcon: Icons.account_balance_wallet,
+      label: 'Expenses',
+    ),
   ];
 
   Widget _buildScreen(int index) {
@@ -92,6 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const FilamentsScreen();
       case 3:
         return const SalesScreen();
+      case 4:
+        return const ExpensesScreen();
       default:
         return const DashboardScreen();
     }

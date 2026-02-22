@@ -42,10 +42,24 @@ class FilamentsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: () => _showFilamentDialog(context),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Filament'),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: context.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: context.brandShadow,
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () => _showFilamentDialog(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.add, size: 18, color: Colors.white),
+                  label: const Text('Add Filament'),
+                ),
               ),
             ],
           ),
@@ -125,6 +139,7 @@ class FilamentsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                         decoration: BoxDecoration(
+                          color: context.surfaceColor.withOpacity(0.5),
                           border: Border(
                             bottom: BorderSide(color: context.borderColor),
                           ),
@@ -706,14 +721,15 @@ class _FilamentFormDialogState extends State<_FilamentFormDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
+                      style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: context.borderColor),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: context.borderColor),
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        foregroundColor: context.textPrimary,
                       ),
                       child: const Text('Cancel'),
                     ),
@@ -721,12 +737,27 @@ class _FilamentFormDialogState extends State<_FilamentFormDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: context.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: context.brandShadow,
                       ),
-                      child: Text(isEditing ? 'Update' : 'Add Filament'),
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          isEditing ? 'Update' : 'Add Filament', 
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
                 ],

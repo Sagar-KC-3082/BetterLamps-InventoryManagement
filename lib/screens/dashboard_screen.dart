@@ -75,11 +75,23 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _showProductDialog(context),
-                    icon: const Icon(Icons.add, size: 18, color: Colors.white),
-                    label: const Text(
-                      'Add New Item',
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: context.primaryGradient,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: context.brandShadow,
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showProductDialog(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.add, size: 18, color: Colors.white),
+                      label: const Text('Add New Item'),
                     ),
                   ),
                 ],
@@ -179,6 +191,7 @@ class DashboardScreen extends StatelessWidget {
                               vertical: 16,
                             ),
                             decoration: BoxDecoration(
+                              color: context.surfaceColor.withOpacity(0.5),
                               border: Border(
                                 bottom: BorderSide(
                                   color: context.borderColor,

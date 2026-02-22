@@ -49,20 +49,10 @@ class SalesScreen extends StatelessWidget {
                 builder: (context, db, child) {
                   return Container(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      gradient: context.primaryGradient,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF3B82F6).withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ), // Premium look
+                      boxShadow: context.brandShadow,
+                    ), 
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -107,7 +97,7 @@ class SalesScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Total Sales',
                       value: db.totalSalesCount.toString(),
-                      color: const Color(0xFF3B82F6), // Blue
+                      color: context.primaryColor,
                       backgroundImage: 'assets/images/4046534.jpg',
                     ),
                   ),
@@ -116,7 +106,7 @@ class SalesScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Revenue',
                       value: 'NRS ${db.totalSalesAmount.toStringAsFixed(0)}',
-                      color: const Color(0xFF10B981), // Green
+                      color: context.successColor,
                       backgroundImage: 'assets/images/5557528.jpg',
                     ),
                   ),
@@ -125,7 +115,7 @@ class SalesScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Total Profit',
                       value: 'NRS ${db.totalProfit.toStringAsFixed(0)}',
-                      color: const Color(0xFF8B5CF6), // Purple
+                      color: const Color(0xFF8B5CF6), // Purple remains as distinct accent
                       backgroundImage: 'assets/images/6379114.jpg',
                     ),
                   ),
@@ -177,6 +167,7 @@ class SalesScreen extends StatelessWidget {
                     color: context.cardColor,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: context.borderColor),
+                    boxShadow: context.subtleShadow,
                   ),
                   child: Column(
                     children: [
@@ -190,6 +181,7 @@ class SalesScreen extends StatelessWidget {
                           border: Border(
                             bottom: BorderSide(color: context.borderColor),
                           ),
+                          color: context.surfaceColor.withOpacity(0.5),
                         ),
                         child: Row(
                           children: [
@@ -199,7 +191,7 @@ class SalesScreen extends StatelessWidget {
                                 'S.N.',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),
@@ -213,7 +205,7 @@ class SalesScreen extends StatelessWidget {
                                   'Product',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                     color: context.textSecondary,
                                   ),
                                 ),
@@ -225,7 +217,7 @@ class SalesScreen extends StatelessWidget {
                                 'Customer',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),
@@ -236,7 +228,7 @@ class SalesScreen extends StatelessWidget {
                                 'Source',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),
@@ -247,7 +239,7 @@ class SalesScreen extends StatelessWidget {
                                 'Date',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),
@@ -258,7 +250,7 @@ class SalesScreen extends StatelessWidget {
                                 'Amount',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),
@@ -270,7 +262,7 @@ class SalesScreen extends StatelessWidget {
                                 'Gross Profit',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: context.textSecondary,
                                 ),
                               ),

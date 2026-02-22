@@ -317,6 +317,33 @@ extension AppThemeExtension on BuildContext {
           ),
         ];
 
+  List<BoxShadow> get brandShadow => [
+        BoxShadow(
+          color: primaryColor.withOpacity(0.3),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ];
+
+  // Gradients
+  LinearGradient get primaryGradient => LinearGradient(
+        colors: [
+          primaryColor,
+          primaryColor.withOpacity(0.8),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+
+  // Glassmorphism
+  BoxDecoration get glassDecoration => BoxDecoration(
+    color: (isDarkMode ? Colors.black : Colors.white).withOpacity(0.7),
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(
+      color: (isDarkMode ? Colors.white : Colors.black).withOpacity(0.1),
+    ),
+  );
+
   // Status colors - keeping them nice and vibrant but accessible
   Color get successColor => const Color(0xFF22C55E); // Green 500
   Color get successBgColor => isDarkMode ? const Color(0xFF052E16) : const Color(0xFFDCFCE7); // Green 950 / 100
