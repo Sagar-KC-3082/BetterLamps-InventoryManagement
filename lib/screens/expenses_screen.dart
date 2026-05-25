@@ -1,238 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../models/expense.dart';
-import '../services/database_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/expense_form_dialog.dart';
+import '../services/database_service.dart';
+import '../models/expense.dart';
+import '../widgets/bl_components.dart';
 
-class ExpensesScreen extends StatelessWidget {
+class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
 
   @override
+  State<ExpensesScreen> createState() => _ExpensesScreenState();
+}
+
+class _ExpensesScreenState extends State<ExpensesScreen> {
+  String _filter = 'All';
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
+    final db = context.watch<DatabaseService>();
+    final c = context.blColors;
+
+    List<Expense> filtered = db.expenses;
+    if (_filter != 'All') {
+      filtered = db.expenses.where((e) => e.person == _filter).toList();
+    }
+
+    final total = filtered.fold(0.0, (s, e) => s + e.amount);
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+    final monthly = db.expenses
+        .where((e) => e.date.isAfter(monthStart))
+        .fold(0.0, (s, e) => s + e.amount);
+
+    return Scaffold(
+      backgroundColor: c.bg,
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          BLPageHeader(
+            breadcrumb: 'Workspace — Expenses',
+            title: 'Expenses',
+            actions: BLButton(
+              label: 'Add Expense',
+              kind: BLButtonKind.primary,
+              leading: Icon(Icons.add, size: 14, color: c.ink),
+              onPressed: () => context.go('/expenses/new'),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: c.rule, width: 1),
+                bottom: BorderSide(color: c.rule, width: 1),
+              ),
+            ),
+            child: IntrinsicHeight(
+              child: Row(
                 children: [
-                  Text(
-                    'Expenses',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: context.textPrimary,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Track spending and other costs',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.textSecondary,
-                    ),
+                  _StatCell('TOTAL', 'NRS ${total.toStringAsFixed(0)}', c),
+                  VerticalDivider(width: 1, color: c.rule),
+                  _StatCell('THIS MONTH', 'NRS ${monthly.toStringAsFixed(0)}', c),
+                  VerticalDivider(width: 1, color: c.rule),
+                  _StatCell('ENTRIES', filtered.length.toString(), c),
+                ],
+              ),
+            ),
+          ),
+          Divider(color: c.rule, height: 1),
+          Expanded(
+            child: BLWorkspace(
+              filterRail: BLFilterRail(
+                selectedItem: _filter,
+                onSelect: (group, item) => setState(() => _filter = item),
+                groups: [
+                  BLFilterGroup(
+                    label: 'Person',
+                    items: [
+                      const BLFilterItem(label: 'All'),
+                      ...db.expenses
+                          .map((e) => e.person)
+                          .toSet()
+                          .map((p) => BLFilterItem(label: p)),
+                    ],
                   ),
                 ],
               ),
-              Consumer<DatabaseService>(
-                builder: (context, db, child) {
-                  return Container(
+              dataPane: Column(
+                children: [
+                  Container(
                     decoration: BoxDecoration(
-                      gradient: context.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: context.brandShadow,
+                      color: c.bg2,
+                      border: Border(bottom: BorderSide(color: c.rule, width: 1)),
                     ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => showExpenseDialog(context),
-                        borderRadius: BorderRadius.circular(12),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.add, size: 20, color: Colors.white),
-                              SizedBox(width: 8),
-                              Text(
-                                'Add Expense',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          // Expenses List
-          Expanded(
-            child: Consumer<DatabaseService>(
-              builder: (context, db, child) {
-                if (db.expenses.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
                       children: [
-                        Icon(
-                          Icons.account_balance_wallet_outlined,
-                          size: 48,
-                          color: context.textSecondary.withOpacity(0.3),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No expenses recorded yet',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: context.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Click Add Expense to get started',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: context.textSecondary.withOpacity(0.7),
-                          ),
-                        ),
+                        SizedBox(width: 80, child: _ColH('DATE', c)),
+                        SizedBox(width: 100, child: _ColH('PERSON', c)),
+                        Expanded(child: _ColH('DESCRIPTION', c)),
+                        SizedBox(width: 120, child: _ColH('AMOUNT', c, right: true)),
+                        const SizedBox(width: 40),
                       ],
                     ),
-                  );
-                }
-
-                return Container(
-                  decoration: BoxDecoration(
-                    color: context.cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: context.borderColor),
-                    boxShadow: context.subtleShadow,
                   ),
-                  child: Column(
-                    children: [
-                      // Header
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: context.borderColor),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? Center(
+                            child: Text('No expenses yet.',
+                                style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)))
+                        : ListView.builder(
+                            itemCount: filtered.length,
+                            itemBuilder: (ctx, i) => _ExpenseRow(expense: filtered[i]),
                           ),
-                          color: context.surfaceColor.withOpacity(0.5),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: Text(
-                                'S.N.',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'Description',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Who did it',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Date',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Amount',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'Notes',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 40),
-                          ],
-                        ),
-                      ),
-                      // List
-                      Expanded(
-                        child: ListView.separated(
-                          padding: EdgeInsets.zero,
-                          itemCount: db.expenses.length,
-                          separatorBuilder: (_, __) =>
-                              Divider(height: 1, color: context.borderColor),
-                          itemBuilder: (context, index) {
-                            final expense = db.expenses[index];
-                            return _ExpenseRow(
-                              expense: expense,
-                              index: index,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ],
@@ -241,173 +126,131 @@ class ExpensesScreen extends StatelessWidget {
   }
 }
 
-class _ExpenseRow extends StatefulWidget {
-  final Expense expense;
-  final int index;
+class _StatCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final BLColors c;
 
-  const _ExpenseRow({required this.expense, required this.index});
-
-  @override
-  State<_ExpenseRow> createState() => _ExpenseRowState();
-}
-
-class _ExpenseRowState extends State<_ExpenseRow> {
-  bool _isHovered = false;
+  const _StatCell(this.label, this.value, this.c);
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _isHovered = true);
-      }),
-      onExit: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _isHovered = false);
-      }),
-      child: Container(
-        color: _isHovered
-            ? (context.isDarkMode
-                ? Colors.white.withOpacity(0.02)
-                : Colors.black.withOpacity(0.01))
-            : Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        child: Row(
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 40,
-              child: Text(
-                '${widget.index + 1}',
-                style: TextStyle(fontSize: 13, color: context.textSecondary),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 2,
-              child: Text(
-                widget.expense.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: context.textPrimary,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                widget.expense.person,
-                style: TextStyle(fontSize: 13, color: context.textPrimary),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                DateFormat('MMM d, yyyy').format(widget.expense.date),
-                style: TextStyle(fontSize: 13, color: context.textSecondary),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                'NRS ${widget.expense.amount.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                  color: context.errorColor, // Expenses are red
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                widget.expense.notes ?? '-',
-                style: TextStyle(fontSize: 13, color: context.textSecondary),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            // Actions
-            SizedBox(
-              width: 40,
-              child: PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_vert,
-                  size: 18,
-                  color: context.textSecondary,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    showExpenseDialog(context, widget.expense);
-                  } else if (value == 'delete') {
-                    _deleteExpense(context);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.edit_outlined,
-                          size: 18,
-                          color: context.textSecondary,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text('Edit'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.delete_outline,
-                          size: 18,
-                          color: context.errorColor,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Delete',
-                          style: TextStyle(color: context.errorColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            Text(label,
+                style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
+            const SizedBox(height: 6),
+            Text(value,
+                style: GoogleFonts.newsreader(
+                    fontSize: 22, fontWeight: FontWeight.w500, color: c.ink, letterSpacing: -0.5)),
           ],
         ),
       ),
     );
   }
+}
 
-  void _deleteExpense(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Expense'),
-        content: Text('Delete expense "${widget.expense.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<DatabaseService>().deleteExpense(widget.expense.id);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.errorColor,
-              foregroundColor: Colors.white,
+class _ColH extends StatelessWidget {
+  final String label;
+  final BLColors c;
+  final bool right;
+
+  const _ColH(this.label, this.c, {this.right = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      textAlign: right ? TextAlign.right : TextAlign.left,
+      style: GoogleFonts.jetBrainsMono(
+          fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5),
+    );
+  }
+}
+
+class _ExpenseRow extends StatelessWidget {
+  final Expense expense;
+  const _ExpenseRow({required this.expense});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    return BLTableRow(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 80,
+              child: Text(
+                DateFormat('MMM d').format(expense.date),
+                style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10.5, color: c.muted, letterSpacing: 0.5),
+              ),
             ),
-            child: const Text('Delete'),
-          ),
-        ],
+            SizedBox(
+              width: 100,
+              child: BLStatusPill(label: expense.person, kind: BLStatusKind.neutral),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(expense.name,
+                      style: GoogleFonts.interTight(
+                          fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500,
+                          letterSpacing: -0.07)),
+                  if (expense.notes != null)
+                    Text(expense.notes!,
+                        style: GoogleFonts.interTight(
+                            fontSize: 11.5, color: c.muted, letterSpacing: -0.06)),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 120,
+              child: Text(
+                '− NRS ${expense.amount.toStringAsFixed(0)}',
+                textAlign: TextAlign.right,
+                style: GoogleFonts.newsreader(
+                    fontSize: 14, fontWeight: FontWeight.w500,
+                    color: c.berry, letterSpacing: -0.3),
+              ),
+            ),
+            SizedBox(
+              width: 40,
+              child: PopupMenuButton<String>(
+                icon: Icon(Icons.more_horiz, size: 16, color: c.faint),
+                color: c.bg2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), side: BorderSide(color: c.rule)),
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete',
+                        style: GoogleFonts.interTight(fontSize: 13, color: c.berry)),
+                  ),
+                ],
+                onSelected: (v) {
+                  if (v == 'delete') {
+                    BLConfirmDialog.show(
+                      context,
+                      title: 'Delete expense?',
+                      body: 'Delete "${expense.name}" (NRS ${expense.amount.toStringAsFixed(0)})?',
+                      onConfirm: () =>
+                          context.read<DatabaseService>().deleteExpense(expense.id),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

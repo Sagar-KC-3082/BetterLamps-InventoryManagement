@@ -1,0 +1,1504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Better Lamps · Workspace</title>
+<meta name="viewport" content="width=1280">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ════════════════════════════════════════
+       TOP BAR — present on every screen
+       ════════════════════════════════════════ -->
+  <header class="topbar">
+    <a class="brand" href="#" data-go="overview">
+      <span class="mark">BL</span>
+      <span class="name">Better <em>Lamps</em></span>
+    </a>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-route="overview">Overview</button>
+      <button class="tab"        data-route="inventory">Inventory</button>
+      <button class="tab"        data-route="filaments">Filaments</button>
+      <button class="tab"        data-route="sales">Sales</button>
+      <button class="tab"        data-route="expenses">Expenses</button>
+      <button class="tab"        data-route="leads">Leads</button>
+    </nav>
+
+    <div class="cmd" data-open-palette tabindex="0" role="button" aria-label="Open command palette">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="ph">Search products, customers, expenses…</span>
+      <span class="k">⌘&nbsp;K</span>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" id="mode-btn" aria-label="Toggle mode"></button>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+      <div class="avatar" title="Sagar">S</div>
+    </div>
+  </header>
+
+  <main class="stage">
+
+    <!-- ══════════════════════════════════════
+         01 · OVERVIEW
+         ══════════════════════════════════════ -->
+    <section class="screen active" data-screen="overview">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Overview</div>
+          <h1>This month, at a glance.</h1>
+          <p class="sub">January 2026 · the workshop is healthy. Two filaments running low, four leads waiting on reply.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export
+          </button>
+          <button class="btn primary" data-go="sales/new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Record Sale
+            <span class="kbd">N</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="lbl">Products</span>
+          <div class="val-row"><span class="val">4</span></div>
+          <span class="delta">unique designs</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">In stock</span>
+          <div class="val-row"><span class="val">11</span></div>
+          <span class="delta">ready to ship</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Revenue · Jan</span>
+          <div class="val-row"><span class="val">NRS&nbsp;9,494</span></div>
+          <span class="delta good">↑ 18% vs Dec</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Profit · Jan</span>
+          <div class="val-row"><span class="val coral">NRS&nbsp;1,858</span></div>
+          <span class="delta">19.6% margin</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Low stock</span>
+          <div class="val-row"><span class="val">2</span></div>
+          <span class="delta warn">below threshold</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Open leads</span>
+          <div class="val-row"><span class="val">12</span></div>
+          <span class="delta warn">4 awaiting reply</span>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+
+        <!-- Critical stock card -->
+        <section class="section-card" style="margin: 0;">
+          <div class="section-card-head">
+            <h3>Critical stock</h3>
+            <span class="sub">4 products · 11 units</span>
+            <div class="right">
+              <button class="btn ghost sm" data-go="inventory">View inventory →</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Product</th><th>SKU</th><th>Stock</th><th>Status</th><th class="r">Revenue (mo)</th>
+            </tr></thead>
+            <tbody>
+              <tr data-go="inventory">
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">PLA · OffWhite</span></div></div></td>
+                <td class="sku">AS-001</td>
+                <td><span class="bar"><span class="track"><span class="fill" style="width:50%"></span></span><span class="txt"><b>2</b>/4</span></span></td>
+                <td><span class="pill">Healthy</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>5,996</span></td>
+              </tr>
+              <tr data-go="inventory">
+                <td><div class="prod"><span class="prod-thumb v2"></span><div class="prod-meta"><span class="n">AuraLume</span><span class="s">PLA · CharcoalBlack</span></div></div></td>
+                <td class="sku">AL-002</td>
+                <td><span class="bar"><span class="track"><span class="fill low" style="width:50%"></span></span><span class="txt"><b>1</b>/2</span></span></td>
+                <td><span class="pill low">Low</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,998</span></td>
+              </tr>
+              <tr data-go="inventory">
+                <td><div class="prod"><span class="prod-thumb v3"></span><div class="prod-meta"><span class="n">AuraNest</span><span class="s">PLA · OffWhite</span></div></div></td>
+                <td class="sku">AN-003</td>
+                <td><span class="bar"><span class="track"><span class="fill low" style="width:100%"></span></span><span class="txt"><b>1</b>/1</span></span></td>
+                <td><span class="pill low">Last one</span></td>
+                <td class="r muted">—</td>
+              </tr>
+              <tr data-go="inventory">
+                <td><div class="prod"><span class="prod-thumb v4"></span><div class="prod-meta"><span class="n">AuraHive</span><span class="s">PLA · CharcoalBlack</span></div></div></td>
+                <td class="sku">AH-004</td>
+                <td><span class="bar"><span class="track"><span class="fill full" style="width:100%"></span></span><span class="txt"><b>7</b>/7</span></span></td>
+                <td><span class="pill">Full</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>500</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Activity feed -->
+        <section class="section-card" style="margin: 0;">
+          <div class="section-card-head">
+            <h3>Recent activity</h3>
+            <span class="sub">last 7 days · 9 events</span>
+          </div>
+          <div class="feed">
+            <div class="feed-item">
+              <span class="when">Jan 15 · 4:12&nbsp;pm</span>
+              <span class="what"><b>Sale recorded</b><span class="det">AuraLume → Rachit Aryal · Instagram Ad</span></span>
+              <span class="amt good"><span class="pre">NRS</span>1,499</span>
+            </div>
+            <div class="feed-item">
+              <span class="when">Jan 12 · 11:30&nbsp;am</span>
+              <span class="what"><b>Filament restock</b><span class="det">PLA · OffWhite · +5 spools from Print3d</span></span>
+              <span class="amt"><span class="pre">−NRS</span>13,000</span>
+            </div>
+            <div class="feed-item">
+              <span class="when">Jan 09 · 9:00&nbsp;am</span>
+              <span class="what"><b>New lead</b><span class="det">Bishesh Manandhar · interested in AuraSpira</span></span>
+              <span class="amt muted">—</span>
+            </div>
+            <div class="feed-item">
+              <span class="when">Jan 06 · 2:18&nbsp;pm</span>
+              <span class="what"><b>Lead converted</b><span class="det">Kiran Giri → AuraSpira sale</span></span>
+              <span class="amt good"><span class="pre">NRS</span>1,499</span>
+            </div>
+            <div class="feed-item">
+              <span class="when">Jan 04 · 6:42&nbsp;pm</span>
+              <span class="what"><b>Print run finished</b><span class="det">AuraHive ×3 · 22h workshop time</span></span>
+              <span class="amt muted">—</span>
+            </div>
+            <div class="feed-item">
+              <span class="when">Jan 03 · 10:00&nbsp;am</span>
+              <span class="what"><b>Expense</b><span class="det">Kraft boxes ×50 · BoxNepal</span></span>
+              <span class="amt"><span class="pre">−NRS</span>1,250</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Pipeline mini -->
+      <section class="section-card">
+        <div class="section-card-head">
+          <h3>Pipeline this month</h3>
+          <span class="sub">12 open leads · 25% conversion</span>
+          <div class="right">
+            <button class="btn ghost sm" data-go="leads">Open pipeline →</button>
+          </div>
+        </div>
+        <table class="tbl">
+          <thead><tr>
+            <th>Lead</th><th>Source</th><th>Interested in</th><th>Budget</th><th>Stage</th><th>Next follow-up</th>
+          </tr></thead>
+          <tbody>
+            <tr data-go="leads">
+              <td><div class="prod-meta"><span class="n">Anjali Maharjan</span><span class="s">@anjali.creates · 9810 220 145</span></div></td>
+              <td><span class="pill neutral">Insta DM</span></td>
+              <td>AuraHive ×2</td>
+              <td><span class="money"><span class="pre">NRS</span>5,500</span></td>
+              <td><span class="pill warn">Awaiting reply</span></td>
+              <td class="sku">Today</td>
+            </tr>
+            <tr data-go="leads">
+              <td><div class="prod-meta"><span class="n">Rakesh Tamang</span><span class="s">9851 071 014</span></div></td>
+              <td><span class="pill neutral">Instagram Ad</span></td>
+              <td>AuraSpira ×1</td>
+              <td><span class="money"><span class="pre">NRS</span>1,500</span></td>
+              <td><span class="pill">Quoted</span></td>
+              <td class="sku">Jan 18</td>
+            </tr>
+            <tr data-go="leads">
+              <td><div class="prod-meta"><span class="n">Sushmita Rai</span><span class="s">9818 552 040</span></div></td>
+              <td><span class="pill neutral">Insta DM</span></td>
+              <td>AuraLume ×2</td>
+              <td><span class="money"><span class="pre">NRS</span>3,000</span></td>
+              <td><span class="pill low">Discount asked</span></td>
+              <td class="sku">Jan 16</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div style="height: 80px;"></div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         02 · INVENTORY
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="inventory">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Inventory</div>
+          <h1>Products.</h1>
+          <p class="sub">— 4 designs · 11 units · NRS 41,300 in retail value on the shelf.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">Columns</button>
+          <button class="btn ghost">Export</button>
+          <button class="btn primary" data-go="inventory/new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      <div class="work">
+        <aside class="rail">
+          <div class="rail-group">
+            <h6 class="rail-label">Status</h6>
+            <ul class="rail-list">
+              <li class="active">All <span class="c">4</span></li>
+              <li>Healthy <span class="c">2</span></li>
+              <li>Low <span class="c">2</span></li>
+              <li>Out of stock <span class="c">0</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Filament</h6>
+            <ul class="rail-list">
+              <li>OffWhite <span class="c">2</span></li>
+              <li>CharcoalBlack <span class="c">2</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Price range</h6>
+            <ul class="rail-list">
+              <li>&lt; NRS 1,500 <span class="c">2</span></li>
+              <li>1,500 — 2,500 <span class="c">1</span></li>
+              <li>&gt; 2,500 <span class="c">1</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Saved views</h6>
+            <ul class="rail-list">
+              <li class="action">+ Best margin</li>
+              <li class="action">+ Restock urgent</li>
+              <li class="action">+ Recently added</li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="count"><b>4</b> products</span>
+            <span class="sortby">sort · <span class="pick">margin ↓</span></span>
+            <div class="right">
+              <button class="btn ghost sm">Group: none</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Product</th><th>SKU</th><th class="r">Price</th><th class="r">Unit cost</th><th>Stock</th><th class="r">Margin</th><th>Status</th><th>Last sale</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="prod"><span class="prod-thumb v4"></span><div class="prod-meta"><span class="n">AuraHive</span><span class="s">PLA · CharcoalBlack</span></div></div></td>
+                <td class="sku">AH-004</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,999</span></td>
+                <td class="r sku">NRS 221</td>
+                <td><span class="bar"><span class="track"><span class="fill full" style="width:100%"></span></span><span class="txt"><b>7</b>/7</span></span></td>
+                <td class="r"><span class="money good">93%</span></td>
+                <td><span class="pill">Full</span></td>
+                <td class="sku">Dec 02</td>
+              </tr>
+              <tr>
+                <td><div class="prod"><span class="prod-thumb v3"></span><div class="prod-meta"><span class="n">AuraNest</span><span class="s">PLA · OffWhite</span></div></div></td>
+                <td class="sku">AN-003</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,499</span></td>
+                <td class="r sku">NRS 208</td>
+                <td><span class="bar"><span class="track"><span class="fill low" style="width:100%"></span></span><span class="txt"><b>1</b>/1</span></span></td>
+                <td class="r"><span class="money good">92%</span></td>
+                <td><span class="pill low">Last one</span></td>
+                <td class="sku">Nov 28</td>
+              </tr>
+              <tr>
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">PLA · OffWhite</span></div></div></td>
+                <td class="sku">AS-001</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r sku">NRS 166</td>
+                <td><span class="bar"><span class="track"><span class="fill" style="width:50%"></span></span><span class="txt"><b>2</b>/4</span></span></td>
+                <td class="r"><span class="money good">89%</span></td>
+                <td><span class="pill">Healthy</span></td>
+                <td class="sku">Dec 19</td>
+              </tr>
+              <tr>
+                <td><div class="prod"><span class="prod-thumb v2"></span><div class="prod-meta"><span class="n">AuraLume</span><span class="s">PLA · CharcoalBlack</span></div></div></td>
+                <td class="sku">AL-002</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r sku">NRS 174</td>
+                <td><span class="bar"><span class="track"><span class="fill low" style="width:50%"></span></span><span class="txt"><b>1</b>/2</span></span></td>
+                <td class="r"><span class="money good">88%</span></td>
+                <td><span class="pill low">Low</span></td>
+                <td class="sku">Jan 15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         02b · ADD PRODUCT
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="inventory/new">
+      <div class="edit-page">
+        <div class="edit-main">
+          <div class="edit-step">
+            <span class="back" data-go="inventory">← Inventory</span>
+            <span>/ New Product</span>
+          </div>
+          <h1>A new lamp joins the workshop.</h1>
+          <p class="lede">Name it, weigh it, price it. The cost breakdown calculates itself as you fill in time and weight.</p>
+
+          <div class="section-block">
+            <h2>Basics</h2>
+            <p class="desc">Name, code, and what it's printed in.</p>
+            <div class="f-grid">
+              <div class="field">
+                <label class="lbl">Product name <span class="req">*</span></label>
+                <input class="input" type="text" value="AuraGlow" />
+              </div>
+              <div class="field">
+                <label class="lbl">SKU code <span class="req">*</span></label>
+                <input class="input" type="text" value="AG-005" />
+                <span class="input-helper">auto-generated from the name — edit if needed</span>
+              </div>
+              <div class="field full">
+                <label class="lbl">Description</label>
+                <textarea class="input" placeholder="A spiral table lamp, warm white, 3D printed in PLA. Pairs well with a 4W E14 warm bulb."></textarea>
+              </div>
+              <div class="field">
+                <label class="lbl">Filament</label>
+                <div class="select"><input class="input" type="text" value="PLA · OffWhite" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Tags</label>
+                <div class="chip-row">
+                  <span class="chip">table-lamp <span class="x">×</span></span>
+                  <span class="chip">warm-white <span class="x">×</span></span>
+                  <span class="chip add">+ add tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Stock &amp; price</h2>
+            <p class="desc">What you have, and what you charge for it.</p>
+            <div class="f-grid three">
+              <div class="field">
+                <label class="lbl">Total stock</label>
+                <input class="input" type="number" value="3" />
+              </div>
+              <div class="field">
+                <label class="lbl">Available</label>
+                <input class="input" type="number" value="3" />
+              </div>
+              <div class="field">
+                <label class="lbl">Low-stock alert</label>
+                <input class="input" type="number" value="2" />
+                <span class="input-helper coral">notify when stock dips to this</span>
+              </div>
+              <div class="field">
+                <label class="lbl">Sale price</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" value="1899" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Compare-at</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" placeholder="optional" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Restock lead time</label>
+                <div class="input with-suffix"><input type="number" value="2" /><span class="suf">days</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Cost breakdown</h2>
+            <p class="desc">Filament cost × weight, plus electricity × print time, plus any extras. The total updates on the right as you type.</p>
+            <div class="f-grid three">
+              <div class="field">
+                <label class="lbl">Filament · cost / kg</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" value="2600" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Base weight</label>
+                <div class="input with-suffix"><input type="number" value="60" /><span class="suf">g</span></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Shade weight</label>
+                <div class="input with-suffix"><input type="number" placeholder="—" /><span class="suf">g</span></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Electricity / hr</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" value="5" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Base print time</label>
+                <div class="input with-suffix"><input type="number" value="2.0" /><span class="suf">hr</span></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Shade time</label>
+                <div class="input with-suffix"><input type="number" placeholder="—" /><span class="suf">hr</span></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Electrical parts</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" placeholder="0" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Other</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" placeholder="0" /></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Images</h2>
+            <p class="desc">First image is the thumbnail. Up to 6.</p>
+            <div class="dropper">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+              <div class="t">Drag images here — or click to browse.</div>
+              <div class="s">PNG · JPG · WEBP — square crops work best</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="edit-side">
+          <h5>On this page</h5>
+          <ul class="toc">
+            <li class="active">Basics</li>
+            <li>Stock &amp; price</li>
+            <li>Cost breakdown</li>
+            <li>Images</li>
+          </ul>
+
+          <h5>Live preview</h5>
+          <div class="preview-card">
+            <div class="thumb-big"></div>
+            <h4>AuraGlow</h4>
+            <div class="sub">AG-005 · PLA · OffWhite</div>
+            <div class="lns">
+              <div class="ln"><span>Filament · 60g</span><span>NRS 156</span></div>
+              <div class="ln"><span>Electricity · 2h</span><span>NRS 10</span></div>
+              <div class="ln"><span>Unit cost</span><b>NRS 166</b></div>
+              <div class="ln total"><span>Sale price</span><b>NRS 1,899</b></div>
+              <div class="ln" style="color: var(--moss); font-style: italic"><span>Projected margin</span><span style="color:var(--moss); font-style:italic">91%</span></div>
+            </div>
+          </div>
+
+          <h5>Quick tip</h5>
+          <div class="aside-note">
+            Drag an <b>.stl</b> file onto the dropper above to auto-import weight and print time from the slicer estimate.
+          </div>
+        </aside>
+
+        <div class="edit-foot">
+          <span class="hint"><span class="k">⌘ S</span> save · <span class="k">esc</span> discard · <span class="k">⌘ ⇧ S</span> save and add another</span>
+          <div class="right">
+            <button class="btn ghost" data-go="inventory">Cancel</button>
+            <button class="btn">Save draft</button>
+            <button class="btn primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
+              Add Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         03 · FILAMENTS
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="filaments">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Filaments</div>
+          <h1>The spool rack.</h1>
+          <p class="sub">— 2 types · 11 spools · NRS 28,600 tied up in raw material.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">Suppliers</button>
+          <button class="btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Filament
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="lbl">Types</span>
+          <div class="val-row"><span class="val">2</span></div>
+          <span class="delta">PLA only</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Spools on hand</span>
+          <div class="val-row"><span class="val">11</span></div>
+        </div>
+        <div class="stat">
+          <span class="lbl">Low stock</span>
+          <div class="val-row"><span class="val coral">2</span></div>
+          <span class="delta warn">below 5 spools</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Used · Jan</span>
+          <div class="val-row"><span class="val">1.08 kg</span></div>
+          <span class="delta">across 6 prints</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Tied up</span>
+          <div class="val-row"><span class="val">NRS&nbsp;28,600</span></div>
+        </div>
+      </div>
+
+      <div class="work">
+        <aside class="rail">
+          <div class="rail-group">
+            <h6 class="rail-label">Material</h6>
+            <ul class="rail-list">
+              <li class="active">All <span class="c">2</span></li>
+              <li>PLA <span class="c">2</span></li>
+              <li>PETG <span class="c">0</span></li>
+              <li>ABS <span class="c">0</span></li>
+              <li>Resin <span class="c">0</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Supplier</h6>
+            <ul class="rail-list">
+              <li>Print3d <span class="c">2</span></li>
+              <li class="action">+ add supplier</li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Stock</h6>
+            <ul class="rail-list">
+              <li>Healthy <span class="c">1</span></li>
+              <li>Low <span class="c">1</span></li>
+              <li>Empty <span class="c">0</span></li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="count"><b>2</b> filaments · <b>11</b> spools</span>
+            <span class="sortby">sort · <span class="pick">quantity ↓</span></span>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Filament</th><th>Supplier</th><th>Last restocked</th><th class="r">Cost / spool</th><th class="r">Used (Jan)</th><th class="c">Quantity</th><th></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="fil"><span class="swatch charcoal"></span><div class="prod-meta"><span class="n">PLA · CharcoalBlack</span><span class="s">1 kg · matte finish</span></div></div></td>
+                <td>Print3d</td>
+                <td class="sku">Jan 04, 2026</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,600</span></td>
+                <td class="r sku">420 g</td>
+                <td class="c"><span class="stepper"><button data-act="-">−</button><span class="v low">3</span><button data-act="+">+</button></span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="fil"><span class="swatch offwhite"></span><div class="prod-meta"><span class="n">PLA · OffWhite</span><span class="s">1 kg · silk finish</span></div></div></td>
+                <td>Print3d</td>
+                <td class="sku">Jan 04, 2026</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,600</span></td>
+                <td class="r sku">660 g</td>
+                <td class="c"><span class="stepper"><button data-act="-">−</button><span class="v">8</span><button data-act="+">+</button></span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pane-head" style="border-top: 1px solid var(--rule); margin-top: 0;">
+            <span class="count"><b>Purchase history</b></span>
+            <span class="sortby">last 30 days</span>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Date</th><th>Filament</th><th>Supplier</th><th>Qty</th><th class="r">Total</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="sku">Jan 04, 2026</td>
+                <td><div class="fil"><span class="swatch charcoal" style="width:22px;height:22px"></span><span class="n">PLA · CharcoalBlack</span></div></td>
+                <td>Print3d</td>
+                <td class="sku">+2 spools</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>5,200</span></td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 04, 2026</td>
+                <td><div class="fil"><span class="swatch offwhite" style="width:22px;height:22px"></span><span class="n">PLA · OffWhite</span></div></td>
+                <td>Print3d</td>
+                <td class="sku">+5 spools</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>13,000</span></td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 12, 2025</td>
+                <td><div class="fil"><span class="swatch offwhite" style="width:22px;height:22px"></span><span class="n">PLA · OffWhite</span></div></td>
+                <td>Print3d</td>
+                <td class="sku">+3 spools</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>7,800</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         04 · SALES
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="sales">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Sales</div>
+          <h1>Transactions.</h1>
+          <p class="sub">— 6 sales · NRS 9,494 revenue · NRS 1,858 profit this January.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">This month ▾</button>
+          <button class="btn ghost">Export</button>
+          <button class="btn primary" data-go="sales/new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Record Sale
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="lbl">Sales</span>
+          <div class="val-row"><span class="val">6</span></div>
+          <span class="delta">January</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Revenue</span>
+          <div class="val-row"><span class="val">NRS&nbsp;9,494</span></div>
+          <span class="delta good">↑ 18% vs Dec</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Profit</span>
+          <div class="val-row"><span class="val coral">NRS&nbsp;1,858</span></div>
+        </div>
+        <div class="stat">
+          <span class="lbl">Margin</span>
+          <div class="val-row"><span class="val">19.6%</span></div>
+          <span class="delta good">↑ 2.1 pts</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Avg ticket</span>
+          <div class="val-row"><span class="val">NRS&nbsp;1,582</span></div>
+          <span class="delta">+ NRS 80</span>
+        </div>
+      </div>
+
+      <div class="work">
+        <aside class="rail">
+          <div class="rail-group">
+            <h6 class="rail-label">Period</h6>
+            <ul class="rail-list">
+              <li>Today</li>
+              <li>This week <span class="c">2</span></li>
+              <li class="active">This month <span class="c">6</span></li>
+              <li>Quarter <span class="c">18</span></li>
+              <li>All time <span class="c">42</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Source</h6>
+            <ul class="rail-list">
+              <li class="active">All <span class="c">6</span></li>
+              <li>Instagram Ad <span class="c">1</span></li>
+              <li>Insta feed <span class="c">1</span></li>
+              <li>Personal <span class="c">4</span></li>
+              <li>Referral <span class="c">0</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Product</h6>
+            <ul class="rail-list">
+              <li>AuraSpira <span class="c">4</span></li>
+              <li>AuraLume <span class="c">2</span></li>
+              <li>AuraHive <span class="c">0</span></li>
+              <li>AuraNest <span class="c">0</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Payment received by</h6>
+            <ul class="rail-list">
+              <li>Sagar <span class="c">6</span></li>
+              <li class="action">+ add teammate</li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="count"><b>6</b> transactions · grouped by date</span>
+            <span class="sortby">sort · <span class="pick">date ↓</span></span>
+            <div class="right">
+              <button class="btn ghost sm">Filters</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Date</th><th>Product</th><th>Customer</th><th>Source</th><th class="r">Amount</th><th class="r">Profit</th><th></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="sku">Jan 15, 2026</td>
+                <td><div class="prod"><span class="prod-thumb v2"></span><div class="prod-meta"><span class="n">AuraLume</span><span class="s">AL-002</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Rachit Aryal</span><span class="s">9860 434 496</span></div></td>
+                <td><span class="pill neutral">Instagram Ad</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r"><span class="money good">+ NRS 123</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 21, 2025</td>
+                <td><div class="prod"><span class="prod-thumb v2"></span><div class="prod-meta"><span class="n">AuraLume</span><span class="s">AL-002</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Bishesh Manandhar</span><span class="s">9808 751 036</span></div></td>
+                <td><span class="pill neutral">Insta feed</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r"><span class="money good">+ NRS 123</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 19, 2025</td>
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">AS-001</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Kiran Giri</span><span class="s">9824 060 133</span></div></td>
+                <td><span class="pill neutral">Personal</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r"><span class="money good">+ NRS 278</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 18, 2025</td>
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">AS-001</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Sweety Shakya</span><span class="s">9840 063 515</span></div></td>
+                <td><span class="pill neutral">Personal</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r"><span class="money good">+ NRS 278</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 12, 2025</td>
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">AS-001</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Santosh Ramtel</span><span class="s">9824 060 133</span></div></td>
+                <td><span class="pill neutral">Personal</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,499</span></td>
+                <td class="r"><span class="money good">+ NRS 278</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Dec 01, 2025</td>
+                <td><div class="prod"><span class="prod-thumb"></span><div class="prod-meta"><span class="n">AuraSpira</span><span class="s">AS-001</span></div></div></td>
+                <td><div class="prod-meta"><span class="n">Maiju Ko Sathi</span><span class="s">—</span></div></td>
+                <td><span class="pill neutral">Personal</span></td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,999</span></td>
+                <td class="r"><span class="money good">+ NRS 778</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         04b · RECORD SALE
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="sales/new">
+      <div class="edit-page">
+        <div class="edit-main">
+          <div class="edit-step">
+            <span class="back" data-go="sales">← Sales</span>
+            <span>/ Record · #BL-007</span>
+          </div>
+          <h1>A new transaction.</h1>
+          <p class="lede">Pick the product, capture the customer, note where they came from. The profit math is on the right.</p>
+
+          <div class="section-block">
+            <h2>What sold</h2>
+            <p class="desc">Stock decrements automatically when you save.</p>
+            <div class="f-grid">
+              <div class="field full">
+                <label class="lbl">Product <span class="req">*</span></label>
+                <div class="select"><input class="input" type="text" value="AuraSpira — AS-001" /></div>
+                <span class="input-helper">2 in stock · NRS 166 unit cost · last sold Dec 19, 2025</span>
+              </div>
+              <div class="field">
+                <label class="lbl">Sale price <span class="req">*</span></label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" value="1499" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Date</label>
+                <input class="input" type="text" value="May 22, 2026" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Customer</h2>
+            <p class="desc">If they've bought before, start typing the name — we'll fill the rest.</p>
+            <div class="f-grid">
+              <div class="field">
+                <label class="lbl">Name <span class="req">*</span></label>
+                <input class="input" type="text" value="Kiran Giri" />
+              </div>
+              <div class="field">
+                <label class="lbl">Phone</label>
+                <input class="input" type="text" value="9824 060 133" />
+              </div>
+              <div class="field">
+                <label class="lbl">Instagram</label>
+                <input class="input" type="text" value="@kiranlamp" />
+              </div>
+              <div class="field">
+                <label class="lbl">Address</label>
+                <input class="input" type="text" placeholder="Patan, Lalitpur" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Marketing &amp; payment</h2>
+            <p class="desc">Source closes the loop on what's working.</p>
+            <div class="f-grid">
+              <div class="field">
+                <label class="lbl">Source</label>
+                <div class="select"><input class="input" type="text" value="Personal Relation" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Payment received by</label>
+                <div class="select"><input class="input" type="text" value="Sagar" /></div>
+              </div>
+              <div class="field full">
+                <label class="lbl">Notes</label>
+                <textarea class="input" placeholder="e.g. paid via eSewa · gift wrap requested · followed up Jan 17"></textarea>
+              </div>
+              <div class="field full">
+                <label class="check on">
+                  <span class="box"></span>
+                  <div>
+                    <div class="lbl-text">Followed up?</div>
+                    <div class="lbl-sub">Marks this customer ready for a thank-you message in two weeks.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="edit-side">
+          <h5>On this page</h5>
+          <ul class="toc">
+            <li class="active">What sold</li>
+            <li>Customer</li>
+            <li>Marketing &amp; payment</li>
+          </ul>
+
+          <h5>Receipt preview</h5>
+          <div class="preview-card">
+            <div class="receipt-head">
+              <span class="brand-line">Better <em>Lamps</em></span>
+              <span class="id">#BL-007 · 22 MAY 2026</span>
+            </div>
+            <div class="lns" style="border-top: 0; padding-top: 4px; margin-top: 0;">
+              <div class="ln"><span><b>AuraSpira</b></span><span>NRS 1,499</span></div>
+              <div class="ln"><span>Customer</span><span>Kiran Giri</span></div>
+              <div class="ln"><span>Source</span><span>Personal</span></div>
+              <div class="ln"><span>Unit cost</span><span>NRS 166</span></div>
+              <div class="ln total"><span>Profit</span><b>NRS 1,333</b></div>
+            </div>
+          </div>
+
+          <h5>Insight</h5>
+          <div class="aside-note moss">
+            Margin on this sale is <b>89%</b> — above your 85% target. Three more like it covers the workshop's monthly electricity.
+          </div>
+        </aside>
+
+        <div class="edit-foot">
+          <span class="hint"><span class="k">⌘ S</span> save · <span class="k">⌘ ⇧ S</span> save and add another</span>
+          <div class="right">
+            <button class="btn ghost" data-go="sales">Cancel</button>
+            <button class="btn">Save &amp; new</button>
+            <button class="btn primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
+              Record sale
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         05 · LEADS
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="leads">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Leads</div>
+          <h1>The pipeline.</h1>
+          <p class="sub">— 12 open · 4 awaiting reply · 25% conversion this month (↑ 4 pts).</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+            Funnel view
+          </button>
+          <button class="btn primary" data-go="leads/new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Lead
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="lbl">Open</span>
+          <div class="val-row"><span class="val">12</span></div>
+        </div>
+        <div class="stat">
+          <span class="lbl">Awaiting reply</span>
+          <div class="val-row"><span class="val coral">4</span></div>
+          <span class="delta warn">&gt; 3 days</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Quoted</span>
+          <div class="val-row"><span class="val">3</span></div>
+        </div>
+        <div class="stat">
+          <span class="lbl">Pipeline value</span>
+          <div class="val-row"><span class="val">NRS&nbsp;24,500</span></div>
+        </div>
+        <div class="stat">
+          <span class="lbl">Conversion</span>
+          <div class="val-row"><span class="val">25%</span></div>
+          <span class="delta good">↑ 4 pts vs Dec</span>
+        </div>
+      </div>
+
+      <div class="work">
+        <aside class="rail">
+          <div class="rail-group">
+            <h6 class="rail-label">Stage</h6>
+            <ul class="rail-list">
+              <li class="active">All <span class="c">12</span></li>
+              <li>New <span class="c">3</span></li>
+              <li>Awaiting reply <span class="c">4</span></li>
+              <li>Quoted <span class="c">3</span></li>
+              <li>Visited <span class="c">1</span></li>
+              <li>Discount asked <span class="c">1</span></li>
+              <li>Won <span class="c">3</span></li>
+              <li>Lost <span class="c">2</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Source</h6>
+            <ul class="rail-list">
+              <li>Instagram <span class="c">8</span></li>
+              <li>Personal <span class="c">2</span></li>
+              <li>Marketplace <span class="c">1</span></li>
+              <li>Referral <span class="c">1</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Quick filters</h6>
+            <ul class="rail-list">
+              <li class="action">↦ Stale &gt; 7 days</li>
+              <li class="action">↦ Discount requested</li>
+              <li class="action">↦ Budget &gt; NRS 5k</li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="count"><b>12</b> leads · <b>NRS 24,500</b> in pipeline</span>
+            <span class="sortby">sort · <span class="pick">follow-up date</span></span>
+            <div class="right">
+              <button class="btn ghost sm">Columns</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Lead</th><th>Source</th><th>Interested in</th><th class="r">Budget</th><th>Stage</th><th>Next follow-up</th><th></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Anjali Maharjan</span><span class="s">@anjali.creates · 9810 220 145</span></div></td>
+                <td><span class="pill neutral">Insta DM</span></td>
+                <td>AuraHive ×2</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>5,500</span></td>
+                <td><span class="pill warn">Awaiting reply</span></td>
+                <td class="sku coral">Today</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Rakesh Tamang</span><span class="s">9851 071 014</span></div></td>
+                <td><span class="pill neutral">Insta Ad</span></td>
+                <td>AuraSpira ×1</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,500</span></td>
+                <td><span class="pill">Quoted</span></td>
+                <td class="sku">Jan 18</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Manish KC</span><span class="s">@manish.kc · 9803 410 002</span></div></td>
+                <td><span class="pill neutral">Referral</span></td>
+                <td>AuraNest ×1</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>2,499</span></td>
+                <td><span class="pill">Visited</span></td>
+                <td class="sku">Jan 19</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Sushmita Rai</span><span class="s">9818 552 040</span></div></td>
+                <td><span class="pill neutral">Insta DM</span></td>
+                <td>AuraLume ×2</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>3,000</span></td>
+                <td><span class="pill low">Discount asked</span></td>
+                <td class="sku">Jan 16</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Bibek Shrestha</span><span class="s">@bibek.lamps</span></div></td>
+                <td><span class="pill neutral">Marketplace</span></td>
+                <td>AuraHive ×1</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>3,000</span></td>
+                <td><span class="pill">New</span></td>
+                <td class="sku">Jan 17</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Saru Adhikari</span><span class="s">9842 887 119</span></div></td>
+                <td><span class="pill neutral">Personal</span></td>
+                <td>AuraSpira ×3</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>4,500</span></td>
+                <td><span class="pill warn">Awaiting reply</span></td>
+                <td class="sku coral">Yesterday</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Pratik Joshi</span><span class="s">@pratik.j · 9818 100 220</span></div></td>
+                <td><span class="pill neutral">Insta DM</span></td>
+                <td>AuraLume ×1</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>1,500</span></td>
+                <td><span class="pill">New</span></td>
+                <td class="sku">Jan 20</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td><div class="prod-meta"><span class="n">Nirmala Bista</span><span class="s">9802 776 110</span></div></td>
+                <td><span class="pill neutral">Insta Ad</span></td>
+                <td>AuraHive ×1, AuraSpira ×1</td>
+                <td class="r"><span class="money"><span class="pre">NRS</span>4,500</span></td>
+                <td><span class="pill">Quoted</span></td>
+                <td class="sku">Jan 21</td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         05b · ADD LEAD
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="leads/new">
+      <div class="edit-page">
+        <div class="edit-main">
+          <div class="edit-step">
+            <span class="back" data-go="leads">← Leads</span>
+            <span>/ New</span>
+          </div>
+          <h1>Someone got in touch.</h1>
+          <p class="lede">Only Name is required. Fill in the rest as you learn it — the form auto-saves as a draft.</p>
+
+          <div class="section-block">
+            <h2>The person</h2>
+            <p class="desc">Identifiers first — name, Instagram handle, phone. We'll match against existing customers as you type.</p>
+            <div class="f-grid">
+              <div class="field">
+                <label class="lbl">Full name <span class="req">*</span></label>
+                <input class="input" type="text" value="Anjali Maharjan" />
+              </div>
+              <div class="field">
+                <label class="lbl">Instagram</label>
+                <input class="input" type="text" value="@anjali.creates" />
+              </div>
+              <div class="field">
+                <label class="lbl">Phone</label>
+                <input class="input" type="text" value="9810 220 145" />
+              </div>
+              <div class="field">
+                <label class="lbl">Alternate phone</label>
+                <input class="input" type="text" placeholder="—" />
+              </div>
+              <div class="field">
+                <label class="lbl">Gender</label>
+                <div class="select"><input class="input" type="text" placeholder="—" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Age</label>
+                <input class="input" type="text" placeholder="—" />
+              </div>
+              <div class="field full">
+                <label class="lbl">Address</label>
+                <input class="input" type="text" placeholder="e.g. Boudha, Kathmandu" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>What they want</h2>
+            <p class="desc">Tie the inquiry to specific products so the funnel reports work.</p>
+            <div class="f-grid">
+              <div class="field">
+                <label class="lbl">Source</label>
+                <div class="select"><input class="input" type="text" value="Instagram DM" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Interested in</label>
+                <div class="select"><input class="input" type="text" value="AuraHive ×2" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Budget</label>
+                <div class="input with-prefix"><span class="pre">NRS</span><input type="number" value="5500" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Quantity</label>
+                <input class="input" type="number" value="2" />
+              </div>
+              <div class="field">
+                <label class="lbl">Expected delivery</label>
+                <input class="input" type="text" placeholder="not set" />
+              </div>
+              <div class="field">
+                <label class="check on">
+                  <span class="box"></span>
+                  <div>
+                    <div class="lbl-text">Asked for discount</div>
+                    <div class="lbl-sub">They mentioned a 10% reduction.</div>
+                  </div>
+                </label>
+              </div>
+              <div class="field full">
+                <label class="lbl">Custom requirements / notes</label>
+                <textarea class="input" placeholder="e.g. gift for sister, prefers warm white, said she found us through Bibek.">Gift for younger sister. Prefers warm white. Said she found us through Bibek Shrestha — credit referral.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>Tracking</h2>
+            <p class="desc">Stage feeds the pipeline. Follow-up date triggers a reminder.</p>
+            <div class="f-grid three">
+              <div class="field">
+                <label class="lbl">Stage</label>
+                <div class="select"><input class="input" type="text" value="New lead" /></div>
+              </div>
+              <div class="field">
+                <label class="lbl">Follow-up date</label>
+                <input class="input" type="text" value="Jan 17, 2026" />
+              </div>
+              <div class="field">
+                <label class="lbl">Last contacted</label>
+                <input class="input" type="text" value="Jan 15, 2026" />
+              </div>
+              <div class="field full">
+                <label class="lbl">Tags</label>
+                <div class="chip-row">
+                  <span class="chip">gift <span class="x">×</span></span>
+                  <span class="chip">referral <span class="x">×</span></span>
+                  <span class="chip">warm-white <span class="x">×</span></span>
+                  <span class="chip add">+ add tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="edit-side">
+          <h5>On this page</h5>
+          <ul class="toc">
+            <li class="active">The person</li>
+            <li>What they want</li>
+            <li>Tracking</li>
+          </ul>
+
+          <h5>Lead card preview</h5>
+          <div class="preview-card">
+            <h4>Anjali Maharjan</h4>
+            <div class="sub">@anjali.creates · 9810 220 145</div>
+            <div class="lns" style="margin-top: 10px;">
+              <div class="ln"><span>Source</span><span style="color:var(--ink)">Insta DM</span></div>
+              <div class="ln"><span>Wants</span><span style="color:var(--ink)">AuraHive ×2</span></div>
+              <div class="ln"><span>Budget</span><span style="color:var(--ink)">NRS 5,500</span></div>
+              <div class="ln"><span>Discount</span><span style="color:var(--ink)">10% asked</span></div>
+              <div class="ln total"><span>Stage</span><b>New</b></div>
+            </div>
+          </div>
+
+          <h5>Smart match</h5>
+          <div class="aside-note">
+            Last name <b>Maharjan</b> appears in <b>2 existing leads</b> (Bishesh, Sujata). Worth checking before save — same household?
+          </div>
+        </aside>
+
+        <div class="edit-foot">
+          <span class="hint"><span class="k">⌘ S</span> save · enters the pipeline immediately</span>
+          <div class="right">
+            <button class="btn ghost" data-go="leads">Cancel</button>
+            <button class="btn">Save draft</button>
+            <button class="btn primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
+              Add Lead
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         06 · EXPENSES
+         ══════════════════════════════════════ -->
+    <section class="screen" data-screen="expenses">
+      <div class="page-head">
+        <div>
+          <div class="crumb">Workspace — Expenses</div>
+          <h1>Where it went.</h1>
+          <p class="sub">— 11 entries · NRS 7,636 in January · net profit NRS 1,858 after costs.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost">Categories</button>
+          <button class="btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Expense
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="lbl">Total · Jan</span>
+          <div class="val-row"><span class="val">NRS&nbsp;7,636</span></div>
+          <span class="delta">11 entries</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Filament</span>
+          <div class="val-row"><span class="val">NRS&nbsp;5,200</span></div>
+          <span class="delta">68% of spend</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Ads</span>
+          <div class="val-row"><span class="val">NRS&nbsp;1,200</span></div>
+          <span class="delta">3 campaigns</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Operations</span>
+          <div class="val-row"><span class="val">NRS&nbsp;1,236</span></div>
+          <span class="delta">packaging + delivery + power</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Net (rev − exp)</span>
+          <div class="val-row"><span class="val coral">NRS&nbsp;1,858</span></div>
+          <span class="delta good">in the black</span>
+        </div>
+      </div>
+
+      <div class="work">
+        <aside class="rail">
+          <div class="rail-group">
+            <h6 class="rail-label">Category</h6>
+            <ul class="rail-list">
+              <li class="active">All <span class="c">11</span></li>
+              <li>Filament <span class="c">2</span></li>
+              <li>Ads <span class="c">3</span></li>
+              <li>Packaging <span class="c">2</span></li>
+              <li>Delivery <span class="c">3</span></li>
+              <li>Electricity <span class="c">1</span></li>
+              <li class="action">+ new category</li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Period</h6>
+            <ul class="rail-list">
+              <li>This week <span class="c">3</span></li>
+              <li class="active">This month <span class="c">11</span></li>
+              <li>Quarter <span class="c">34</span></li>
+              <li>All time <span class="c">128</span></li>
+            </ul>
+          </div>
+          <div class="rail-group">
+            <h6 class="rail-label">Vendor</h6>
+            <ul class="rail-list">
+              <li>Print3d <span class="c">2</span></li>
+              <li>Meta <span class="c">3</span></li>
+              <li>Pathao <span class="c">3</span></li>
+              <li>BoxNepal <span class="c">2</span></li>
+              <li>NEA <span class="c">1</span></li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="count"><b>11</b> expenses · grouped by <span class="pick">category</span></span>
+            <span class="sortby">sort · <span class="pick">date ↓</span></span>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th>Date</th><th>Category</th><th>Description</th><th>Vendor</th><th class="r">Amount</th><th></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="sku">Jan 04, 2026</td>
+                <td><span class="pill neutral">Filament</span></td>
+                <td>PLA · OffWhite × 5 spools</td>
+                <td>Print3d</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>13,000</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 04, 2026</td>
+                <td><span class="pill neutral">Filament</span></td>
+                <td>PLA · CharcoalBlack × 2 spools</td>
+                <td>Print3d</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>5,200</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 12, 2026</td>
+                <td><span class="pill neutral">Ads</span></td>
+                <td>Instagram boost · AuraLume campaign</td>
+                <td>Meta</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>800</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 14, 2026</td>
+                <td><span class="pill neutral">Packaging</span></td>
+                <td>Kraft boxes × 50</td>
+                <td>BoxNepal</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>1,250</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 15, 2026</td>
+                <td><span class="pill neutral">Ads</span></td>
+                <td>Instagram story ads · AuraSpira</td>
+                <td>Meta</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>250</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 16, 2026</td>
+                <td><span class="pill neutral">Delivery</span></td>
+                <td>Pathao deliveries × 3</td>
+                <td>Pathao</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>380</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 17, 2026</td>
+                <td><span class="pill neutral">Electricity</span></td>
+                <td>NEA bill · workshop · Jan</td>
+                <td>NEA</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>1,420</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 18, 2026</td>
+                <td><span class="pill neutral">Ads</span></td>
+                <td>Reel promotion · all products</td>
+                <td>Meta</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>150</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 19, 2026</td>
+                <td><span class="pill neutral">Packaging</span></td>
+                <td>Bubble wrap roll</td>
+                <td>BoxNepal</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>340</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 20, 2026</td>
+                <td><span class="pill neutral">Delivery</span></td>
+                <td>Pathao · AuraHive to Bhaktapur</td>
+                <td>Pathao</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>180</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+              <tr>
+                <td class="sku">Jan 21, 2026</td>
+                <td><span class="pill neutral">Delivery</span></td>
+                <td>Pathao · AuraSpira to Patan</td>
+                <td>Pathao</td>
+                <td class="r"><span class="money">−<span class="pre"> NRS</span>120</span></td>
+                <td class="r row-menu">⋯</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════
+       COMMAND PALETTE
+       ══════════════════════════════════════ -->
+  <div class="cmd-overlay" id="palette" role="dialog" aria-label="Command palette">
+    <div class="cmd-palette">
+      <div class="cmd-palette-input">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="palette-input" type="text" placeholder="Type to navigate, create, or search…" autocomplete="off" />
+        <span class="esc">esc</span>
+      </div>
+      <div class="cmd-list" id="palette-list"></div>
+      <div class="cmd-palette-foot">
+        <span><span class="k">↑↓</span> navigate</span>
+        <span><span class="k">↵</span> open</span>
+        <span><span class="k">esc</span> close</span>
+        <span style="margin-left:auto; font-family: var(--serif); font-style: italic; letter-spacing: 0;">Better <em style="color:var(--coral)">Lamps</em>.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating workshop signature -->
+  <div class="signature">
+    <span class="dot"></span>
+    <span>Workshop online — Sagar</span>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

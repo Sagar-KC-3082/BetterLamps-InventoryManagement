@@ -8,7 +8,14 @@
       "Bash(cmd /c \"flutter analyze\")",
       "Bash(D:\\\\flutter\\\\bin\\\\flutter.bat analyze:*)",
       "WebFetch(domain:stitch.withgoogle.com)",
-      "Bash(cmd /c \"flutter analyze lib\\\\screens\\\\inventory_screen.dart\")"
+      "Bash(cmd /c \"flutter analyze lib\\\\screens\\\\inventory_screen.dart\")",
+      "Bash(/Users/sagar/development/flutter/bin/flutter analyze *)",
+      "Bash(/Users/sagar/fvm/default/bin/flutter analyze *)",
+      "Bash(/Users/sagar/fvm/versions/3.32.1/bin/flutter analyze *)",
+      "Read(//Users/sagar/development/flutter/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/sagar/**)",
+      "Bash(/Users/sagar/fvm/versions/3.32.1/bin/flutter pub *)"
     ]
   }
 }

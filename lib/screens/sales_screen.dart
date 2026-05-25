@@ -1,316 +1,138 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../models/product.dart';
-import '../models/sale.dart';
-import '../services/database_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/sale_form_dialog.dart';
-import '../widgets/sale_details_sheet.dart';
+import '../services/database_service.dart';
+import '../models/sale.dart';
+import '../widgets/bl_components.dart';
 
-class SalesScreen extends StatelessWidget {
+class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
 
   @override
+  State<SalesScreen> createState() => _SalesScreenState();
+}
+
+class _SalesScreenState extends State<SalesScreen> {
+  String _periodFilter = 'This month';
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
+    final db = context.watch<DatabaseService>();
+    final c = context.blColors;
+
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+    final lastMonthStart = DateTime(now.year, now.month - 1, 1);
+    final lastMonthEnd = monthStart;
+
+    List<Sale> filtered;
+    switch (_periodFilter) {
+      case 'Last month':
+        filtered = db.sales
+            .where((s) => s.saleDate.isAfter(lastMonthStart) && s.saleDate.isBefore(lastMonthEnd))
+            .toList();
+        break;
+      case 'All time':
+        filtered = db.sales;
+        break;
+      default:
+        filtered = db.sales.where((s) => s.saleDate.isAfter(monthStart)).toList();
+    }
+
+    final revenue = filtered.fold(0.0, (s, sale) => s + sale.price);
+    final profit = filtered.fold(0.0, (sum, sale) {
+      final p = db.getProductById(sale.productId);
+      return sum + (p != null ? sale.price - p.costPrice.totalCost : 0);
+    });
+    final avgTicket = filtered.isEmpty ? 0.0 : revenue / filtered.length;
+
+    return Scaffold(
+      backgroundColor: c.bg,
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          BLPageHeader(
+            breadcrumb: 'Workspace — Sales',
+            title: 'Sales',
+            actions: BLButton(
+              label: 'Record Sale',
+              kind: BLButtonKind.primary,
+              leading: Icon(Icons.add, size: 14, color: c.ink),
+              onPressed: () => context.go('/sales/new'),
+            ),
+          ),
+          // Stats strip
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: c.rule, width: 1),
+                bottom: BorderSide(color: c.rule, width: 1),
+              ),
+            ),
+            child: IntrinsicHeight(
+              child: Row(
                 children: [
-                  Text(
-                    'Sales',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: context.textPrimary,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Track your sales and customers',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.textSecondary,
-                    ),
-                  ),
+                  _StatCell('SALES', filtered.length.toString(), c),
+                  VerticalDivider(width: 1, color: c.rule),
+                  _StatCell('REVENUE', 'NRS ${revenue.toStringAsFixed(0)}', c),
+                  VerticalDivider(width: 1, color: c.rule),
+                  _StatCell('PROFIT', 'NRS ${profit.toStringAsFixed(0)}', c, isProfit: true),
+                  VerticalDivider(width: 1, color: c.rule),
+                  _StatCell('AVG TICKET', 'NRS ${avgTicket.toStringAsFixed(0)}', c),
                 ],
               ),
-              Consumer<DatabaseService>(
-                builder: (context, db, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: context.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: context.brandShadow,
-                    ), 
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: db.products.isEmpty
-                            ? () => _showNoProductsDialog(context)
-                            : () => showSaleDialog(context),
-                        borderRadius: BorderRadius.circular(12),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.add, size: 20, color: Colors.white),
-                              SizedBox(width: 8),
-                              Text(
-                                'Record Sale',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 32),
-          // Stats
-          Consumer<DatabaseService>(
-            builder: (context, db, child) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      label: 'Total Sales',
-                      value: db.totalSalesCount.toString(),
-                      color: context.primaryColor,
-                      backgroundImage: 'assets/images/4046534.jpg',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      label: 'Revenue',
-                      value: 'NRS ${db.totalSalesAmount.toStringAsFixed(0)}',
-                      color: context.successColor,
-                      backgroundImage: 'assets/images/5557528.jpg',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      label: 'Total Profit',
-                      value: 'NRS ${db.totalProfit.toStringAsFixed(0)}',
-                      color: const Color(0xFF8B5CF6), // Purple remains as distinct accent
-                      backgroundImage: 'assets/images/6379114.jpg',
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 32),
-          // Sales List
+          Divider(color: c.rule, height: 1),
           Expanded(
-            child: Consumer<DatabaseService>(
-              builder: (context, db, child) {
-                if (db.sales.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+            child: BLWorkspace(
+              filterRail: BLFilterRail(
+                selectedItem: _periodFilter,
+                onSelect: (group, item) => setState(() => _periodFilter = item),
+                groups: const [
+                  BLFilterGroup(label: 'Period', items: [
+                    BLFilterItem(label: 'This month'),
+                    BLFilterItem(label: 'Last month'),
+                    BLFilterItem(label: 'All time'),
+                  ]),
+                ],
+              ),
+              dataPane: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: c.bg2,
+                      border: Border(bottom: BorderSide(color: c.rule, width: 1)),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
                       children: [
-                        Icon(
-                          Icons.receipt_outlined,
-                          size: 48,
-                          color: context.textSecondary.withOpacity(0.3),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No sales yet',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: context.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          db.products.isEmpty
-                              ? 'Add products first'
-                              : 'Record your first sale',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: context.textSecondary.withOpacity(0.7),
-                          ),
-                        ),
+                        SizedBox(width: 80, child: _ColH('DATE', c)),
+                        Expanded(flex: 2, child: _ColH('PRODUCT', c)),
+                        Expanded(flex: 2, child: _ColH('CUSTOMER', c)),
+                        SizedBox(width: 100, child: _ColH('SOURCE', c)),
+                        SizedBox(width: 100, child: _ColH('AMOUNT', c, right: true)),
+                        SizedBox(width: 80, child: _ColH('PROFIT', c, right: true)),
                       ],
                     ),
-                  );
-                }
-
-                return Container(
-                  decoration: BoxDecoration(
-                    color: context.cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: context.borderColor),
-                    boxShadow: context.subtleShadow,
                   ),
-                  child: Column(
-                    children: [
-                      // Header
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: context.borderColor),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? Center(
+                            child: Text('No sales for this period.',
+                                style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)))
+                        : ListView.builder(
+                            itemCount: filtered.length,
+                            itemBuilder: (ctx, i) =>
+                                _SaleRow(sale: filtered[i]),
                           ),
-                          color: context.surfaceColor.withOpacity(0.5),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: Text(
-                                'S.N.',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 56),
-                                child: Text(
-                                  'Product',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Customer',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Source',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Date',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Amount',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                'Gross Profit',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 48),
-                            // Actions space matches row popup
-                          ],
-                        ),
-                      ),
-                      // List
-                      Expanded(
-                        child: ListView.separated(
-                          padding: EdgeInsets.zero,
-                          itemCount: db.sales.length,
-                          separatorBuilder: (_, __) =>
-                              Divider(height: 1, color: context.borderColor),
-                          itemBuilder: (context, index) {
-                            final sale = db.sales[index];
-                            final product = db.getProductById(sale.productId);
-                            return _SaleRow(
-                              sale: sale,
-                              product: product,
-                              index: index,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
                   ),
-                );
-              },
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showNoProductsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('No Products'),
-        content: const Text('Add products first before recording a sale.'),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
           ),
         ],
       ),
@@ -318,339 +140,156 @@ class SalesScreen extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
+class _StatCell extends StatelessWidget {
   final String label;
   final String value;
-  final Color color;
-  final String? backgroundImage;
+  final BLColors c;
+  final bool isProfit;
 
-  const _StatCard({
-    required this.label,
-    required this.value,
-    this.color = const Color(0xFF3B82F6),
-    this.backgroundImage,
-  });
+  const _StatCell(this.label, this.value, this.c, {this.isProfit = false});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.borderColor),
-        boxShadow: context.subtleShadow,
-      ),
-      child: Stack(
-        children: [
-          if (backgroundImage != null)
-             Positioned.fill(
-              child: Opacity(
-                opacity: 0.15, // Low opacity for background
-                child: Image.asset(
-                  backgroundImage!,
-                  fit: BoxFit.cover,
-                ),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: GoogleFonts.newsreader(
+                fontSize: 22,
+                fontWeight: FontWeight.w500,
+                
+                color: isProfit ? c.coral : c.ink,
+                letterSpacing: -0.5,
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: context.textPrimary,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.trending_up, 
-                      size: 16,
-                      color: color,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: context.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SaleRow extends StatefulWidget {
-  final Sale sale;
-  final Product? product;
-  final int index;
-
-  const _SaleRow({required this.sale, this.product, required this.index});
-
-  @override
-  State<_SaleRow> createState() => _SaleRowState();
-}
-
-class _SaleRowState extends State<_SaleRow> {
-  bool _isHovered = false;
-
-  Widget _buildProductImage() {
-    if (widget.product != null && widget.product!.images.isNotEmpty) {
-      try {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: Image.memory(
-            base64Decode(widget.product!.images.first),
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
-        );
-      } catch (e) {
-        return _defaultImage();
-      }
-    }
-    return _defaultImage();
-  }
-
-  Widget _defaultImage() {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? Colors.white.withOpacity(0.05)
-            : Colors.black.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Icon(
-        Icons.lightbulb_outline,
-        color: context.textSecondary.withOpacity(0.3),
-        size: 20,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final profit =
-        widget.sale.price - (widget.product?.costPrice.totalCost ?? 0);
-
-    return MouseRegion(
-      onEnter: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _isHovered = true);
-      }),
-      onExit: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _isHovered = false);
-      }),
-      child: InkWell(
-        onTap: () => showSaleDetailsSheet(context, widget.sale, widget.product),
-        child: Container(
-          color: _isHovered
-              ? (context.isDarkMode
-                    ? Colors.white.withOpacity(0.02)
-                    : Colors.black.withOpacity(0.01))
-              : Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 40,
-                child: Text(
-                  '${widget.index + 1}',
-                  style: TextStyle(fontSize: 13, color: context.textSecondary),
-                ),
-              ),
-              const SizedBox(width: 12),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 1,
-                child: Row(
-                  children: [
-                    _buildProductImage(),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        widget.product?.name ?? 'Unknown',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: context.textPrimary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Customer
-              // Customer
-              Expanded(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.sale.customer.name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.textPrimary,
-                      ),
-                    ),
-                    if (widget.sale.customer.phone.isNotEmpty)
-                      Text(
-                        widget.sale.customer.phone,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: context.textSecondary,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              // Source
-              Expanded(
-                flex: 1,
-                child: Text(
-                  widget.sale.source ?? '-',
-                  style: TextStyle(fontSize: 13, color: context.textSecondary),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              // Date
-              Expanded(
-                flex: 1,
-                child: Text(
-                  DateFormat('MMM d, yyyy').format(widget.sale.saleDate),
-                  style: TextStyle(fontSize: 13, color: context.textSecondary),
-                ),
-              ),
-
-              Expanded(
-                flex: 1,
-                child: Text(
-                  'NRS ${widget.sale.price.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: context.textPrimary,
-                  ),
-                ),
-              ),
-
-              Expanded(
-                flex: 1,
-                child: Text(
-                  'NRS ${profit.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: context.successColor,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Actions
-              SizedBox(
-                width: 40,
-                child: PopupMenuButton<String>(
-                  icon: Icon(
-                    Icons.more_vert,
-                    size: 18,
-                    color: context.textSecondary,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      showSaleDialog(context, widget.sale);
-                    } else if (value == 'delete') {
-                      _deleteSale(context);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.edit_outlined,
-                            size: 18,
-                            color: context.textSecondary,
-                          ),
-                          const SizedBox(width: 12),
-                          const Text('Edit'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete_outline,
-                            size: 18,
-                            color: context.errorColor,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Delete',
-                            style: TextStyle(color: context.errorColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
+}
 
-  void _deleteSale(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Sale'),
-        content: Text('Delete sale to "${widget.sale.customer.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<DatabaseService>().deleteSale(widget.sale.id);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.errorColor,
-              foregroundColor: Colors.white,
+class _ColH extends StatelessWidget {
+  final String label;
+  final BLColors c;
+  final bool right;
+
+  const _ColH(this.label, this.c, {this.right = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      textAlign: right ? TextAlign.right : TextAlign.left,
+      style: GoogleFonts.jetBrainsMono(
+          fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5),
+    );
+  }
+}
+
+class _SaleRow extends StatelessWidget {
+  final Sale sale;
+  const _SaleRow({required this.sale});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    final db = context.read<DatabaseService>();
+    final product = db.getProductById(sale.productId);
+    final profit = product != null ? sale.price - product.costPrice.totalCost : 0.0;
+
+    return BLTableRow(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 80,
+              child: Text(
+                DateFormat('MMM d').format(sale.saleDate),
+                style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10.5, color: c.muted, letterSpacing: 0.5),
+              ),
             ),
-            child: const Text('Delete'),
-          ),
-        ],
+            Expanded(
+              flex: 2,
+              child: Row(
+                children: [
+                  Container(
+                    width: 28, height: 28,
+                    decoration: BoxDecoration(
+                        color: c.bg3, borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: c.rule)),
+                    child: Center(
+                      child: Text(
+                        product?.name.isNotEmpty == true ? product!.name[0] : '?',
+                        style: GoogleFonts.newsreader(fontSize: 13, color: c.muted),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      product?.name ?? 'Unknown product',
+                      style: GoogleFonts.interTight(
+                          fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500,
+                          letterSpacing: -0.07),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(sale.customer.name,
+                      style: GoogleFonts.interTight(
+                          fontSize: 13, color: c.ink, letterSpacing: -0.07)),
+                  Text(sale.customer.phone,
+                      style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10, color: c.muted, letterSpacing: 0.3)),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 100,
+              child: sale.source != null
+                  ? BLStatusPill(label: sale.source!, kind: BLStatusKind.neutral)
+                  : const SizedBox(),
+            ),
+            SizedBox(
+              width: 100,
+              child: Text(
+                'NRS ${sale.price.toStringAsFixed(0)}',
+                textAlign: TextAlign.right,
+                style: GoogleFonts.newsreader(
+                    fontSize: 14, fontWeight: FontWeight.w500,
+                    color: c.ink, letterSpacing: -0.3),
+              ),
+            ),
+            SizedBox(
+              width: 80,
+              child: Text(
+                '+${profit.toStringAsFixed(0)}',
+                textAlign: TextAlign.right,
+                style: GoogleFonts.newsreader(
+                    fontSize: 14, fontWeight: FontWeight.w500,
+                    color: c.moss, letterSpacing: -0.3),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,313 +1,320 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'services/database_service.dart';
-import 'services/theme_service.dart';
+import 'services/toast_service.dart';
 import 'theme/app_theme.dart';
-import 'screens/dashboard_screen.dart';
+import 'widgets/command_palette.dart';
+import 'screens/overview_screen.dart';
 import 'screens/inventory_screen.dart';
 import 'screens/filaments_screen.dart';
 import 'screens/sales_screen.dart';
 import 'screens/expenses_screen.dart';
+import 'screens/leads_screen.dart';
+import 'screens/add_product_page.dart';
+import 'screens/record_sale_page.dart';
+import 'screens/add_expense_page.dart';
+import 'screens/add_lead_page.dart';
+
+// ---------------------------------------------------------------------------
+// Theme persistence
+// ---------------------------------------------------------------------------
+
+class ThemeNotifier extends ChangeNotifier {
+  ThemeMode _mode;
+
+  ThemeNotifier(this._mode);
+
+  ThemeMode get themeMode => _mode;
+  bool get isDark => _mode == ThemeMode.dark;
+
+  void toggle() {
+    _mode = _mode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    notifyListeners();
+    _persist();
+  }
+
+  void setMode(ThemeMode m) {
+    _mode = m;
+    notifyListeners();
+    _persist();
+  }
+
+  Future<void> _persist() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('bl_mode', _mode == ThemeMode.dark ? 'dark' : 'light');
+  }
+
+  static Future<ThemeNotifier> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('bl_mode');
+    final mode = raw == 'dark' ? ThemeMode.dark : ThemeMode.light;
+    return ThemeNotifier(mode);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Router
+// ---------------------------------------------------------------------------
+
+final _router = GoRouter(
+  initialLocation: '/',
+  routes: [
+    ShellRoute(
+      builder: (context, state, child) => _AppShell(child: child),
+      routes: [
+        GoRoute(path: '/', builder: (_, __) => const OverviewScreen()),
+        GoRoute(
+          path: '/inventory',
+          builder: (_, __) => const InventoryScreen(),
+          routes: [
+            GoRoute(path: 'new', builder: (_, __) => const AddProductPage()),
+          ],
+        ),
+        GoRoute(path: '/filaments', builder: (_, __) => const FilamentsScreen()),
+        GoRoute(
+          path: '/sales',
+          builder: (_, __) => const SalesScreen(),
+          routes: [
+            GoRoute(path: 'new', builder: (_, __) => const RecordSalePage()),
+          ],
+        ),
+        GoRoute(
+          path: '/expenses',
+          builder: (_, __) => const ExpensesScreen(),
+          routes: [
+            GoRoute(path: 'new', builder: (_, __) => const AddExpensePage()),
+          ],
+        ),
+        GoRoute(
+          path: '/leads',
+          builder: (_, __) => const LeadsScreen(),
+          routes: [
+            GoRoute(path: 'new', builder: (_, __) => const AddLeadPage()),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// main()
+// ---------------------------------------------------------------------------
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final databaseService = DatabaseService();
   await databaseService.init();
 
+  final themeNotifier = await ThemeNotifier.load();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: databaseService),
-        ChangeNotifierProvider(create: (_) => ThemeService()),
+        ChangeNotifierProvider.value(value: themeNotifier),
       ],
-      child: const MyApp(),
+      child: const BetterLampsApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// ---------------------------------------------------------------------------
+// BetterLampsApp
+// ---------------------------------------------------------------------------
+
+class BetterLampsApp extends StatelessWidget {
+  const BetterLampsApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeService>(
-      builder: (context, themeService, child) {
-        return MaterialApp(
-          title: 'Better Lamps',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeService.themeMode,
-          home: const HomeScreen(),
-        );
-      },
+    final themeNotifier = context.watch<ThemeNotifier>();
+    return MaterialApp.router(
+      title: 'Better Lamps',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeNotifier.themeMode,
+      routerConfig: _router,
+      builder: (context, child) => ToastOverlay(child: child ?? const SizedBox()),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+// ---------------------------------------------------------------------------
+// _AppShell
+// ---------------------------------------------------------------------------
+
+class _AppShell extends StatefulWidget {
+  final Widget child;
+  const _AppShell({required this.child});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<_AppShell> createState() => _AppShellState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+class _AppShellState extends State<_AppShell> {
+  bool _paletteOpen = false;
 
-  final List<_NavItem> _navItems = [
-    _NavItem(
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard,
-      label: 'Dashboard',
-    ),
-    _NavItem(
-      icon: Icons.inventory_2_outlined,
-      activeIcon: Icons.inventory_2,
-      label: 'Inventory',
-    ),
-    _NavItem(
-      icon: Icons.layers_outlined,
-      activeIcon: Icons.layers,
-      label: 'Filaments',
-    ),
-    _NavItem(
-      icon: Icons.receipt_outlined,
-      activeIcon: Icons.receipt,
-      label: 'Sales',
-    ),
-    _NavItem(
-      icon: Icons.account_balance_wallet_outlined,
-      activeIcon: Icons.account_balance_wallet,
-      label: 'Expenses',
-    ),
-  ];
-
-  Widget _buildScreen(int index) {
-    switch (index) {
-      case 0:
-        return const DashboardScreen();
-      case 1:
-        return const InventoryScreen();
-      case 2:
-        return const FilamentsScreen();
-      case 3:
-        return const SalesScreen();
-      case 4:
-        return const ExpensesScreen();
-      default:
-        return const DashboardScreen();
-    }
-  }
+  void _openPalette() => setState(() => _paletteOpen = true);
+  void _closePalette() => setState(() => _paletteOpen = false);
 
   @override
   Widget build(BuildContext context) {
-    final themeService = context.watch<ThemeService>();
-    final isDark = themeService.isDarkMode;
-
-    return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: Row(
-        children: [
-          // Minimal Sidebar
-          Container(
-            width: 220,
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              border: Border(
-                right: BorderSide(color: context.borderColor, width: 1),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    final themeNotifier = context.watch<ThemeNotifier>();
+    return KeyboardListener(
+      focusNode: FocusNode(),
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.keyK &&
+            HardwareKeyboard.instance.isMetaPressed) {
+          _openPalette();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: context.blColors.bg,
+        body: Stack(
+          children: [
+            Column(
               children: [
-                const SizedBox(height: 32),
-                // Logo
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          'assets/images/app_logo.png',
-                          width: 32,
-                          height: 32,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Better Lamps',
-                        style: TextStyle(
-                          color: context.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ],
-                  ),
+                _TopBar(
+                  onSearchTap: _openPalette,
+                  onToggleTheme: themeNotifier.toggle,
+                  isDark: themeNotifier.isDark,
                 ),
-                const SizedBox(height: 40),
-                // Navigation
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12, bottom: 8),
-                        child: Text(
-                          'MENU',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: context.textSecondary.withOpacity(0.6),
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                      ...List.generate(_navItems.length, (index) {
-                        final item = _navItems[index];
-                        final isSelected = _selectedIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Material(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            child: InkWell(
-                              onTap: () =>
-                                  setState(() => _selectedIndex = index),
-                              borderRadius: BorderRadius.circular(8),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? (isDark
-                                            ? Colors.white.withOpacity(0.08)
-                                            : Colors.black.withOpacity(0.04))
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      isSelected ? item.activeIcon : item.icon,
-                                      color: isSelected
-                                          ? context.textPrimary
-                                          : context.textSecondary,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      item.label,
-                                      style: TextStyle(
-                                        color: isSelected
-                                            ? context.textPrimary
-                                            : context.textSecondary,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w500
-                                            : FontWeight.normal,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                // Theme Toggle
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.05)
-                          : Colors.black.withOpacity(0.03),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () =>
-                                themeService.setThemeMode(ThemeMode.light),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: !isDark
-                                    ? (isDark
-                                          ? Colors.white.withOpacity(0.1)
-                                          : Colors.white)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(6),
-                                boxShadow: !isDark
-                                    ? context.subtleShadow
-                                    : null,
-                              ),
-                              child: Icon(
-                                Icons.light_mode_outlined,
-                                size: 16,
-                                color: !isDark
-                                    ? context.textPrimary
-                                    : context.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () =>
-                                themeService.setThemeMode(ThemeMode.dark),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.white.withOpacity(0.1)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.dark_mode_outlined,
-                                size: 16,
-                                color: isDark
-                                    ? context.textPrimary
-                                    : context.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                Expanded(child: widget.child),
               ],
             ),
+            if (_paletteOpen)
+              CommandPalette(
+                onClose: _closePalette,
+                onToggleTheme: themeNotifier.toggle,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// _TopBar
+// ---------------------------------------------------------------------------
+
+class _TopBar extends StatelessWidget {
+  final VoidCallback onSearchTap;
+  final VoidCallback onToggleTheme;
+  final bool isDark;
+
+  const _TopBar({
+    required this.onSearchTap,
+    required this.onToggleTheme,
+    required this.isDark,
+  });
+
+  static const _navItems = [
+    ('Overview', '/'),
+    ('Inventory', '/inventory'),
+    ('Filaments', '/filaments'),
+    ('Sales', '/sales'),
+    ('Expenses', '/expenses'),
+    ('Leads', '/leads'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    final location = GoRouterState.of(context).uri.toString();
+
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: c.bg2,
+        border: Border(bottom: BorderSide(color: c.rule, width: 1)),
+      ),
+      child: Row(
+        children: [
+          // Brand wordmark
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              'Better Lamps.',
+              style: GoogleFonts.newsreader(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: c.ink,
+                letterSpacing: -0.4,
+              ),
+            ),
           ),
-          // Main Content
+          Container(width: 1, height: 24, color: c.rule),
+          // Nav tabs
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: KeyedSubtree(
-                key: ValueKey<int>(_selectedIndex),
-                child: _buildScreen(_selectedIndex),
+            child: Row(
+              children: _navItems.map((item) {
+                final (label, path) = item;
+                final isActive = path == '/'
+                    ? location == '/'
+                    : location.startsWith(path);
+                return _NavTab(
+                  label: label,
+                  isActive: isActive,
+                  onTap: () => context.go(path),
+                );
+              }).toList(),
+            ),
+          ),
+          // Search
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: InkWell(
+              onTap: onSearchTap,
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  border: Border.all(color: c.rule),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, size: 14, color: c.muted),
+                    const SizedBox(width: 6),
+                    Text(
+                      '⌘K',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10,
+                        color: c.muted,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Theme toggle
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: InkWell(
+              onTap: onToggleTheme,
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                padding: const EdgeInsets.all(7),
+                child: Icon(
+                  isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  size: 16,
+                  color: c.muted,
+                ),
               ),
             ),
           ),
@@ -317,10 +324,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _NavItem {
-  final IconData icon;
-  final IconData activeIcon;
+class _NavTab extends StatefulWidget {
   final String label;
+  final bool isActive;
+  final VoidCallback onTap;
 
-  _NavItem({required this.icon, required this.activeIcon, required this.label});
+  const _NavTab({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  State<_NavTab> createState() => _NavTabState();
+}
+
+class _NavTabState extends State<_NavTab> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: widget.isActive ? c.coral : Colors.transparent,
+                width: 2,
+              ),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              widget.label,
+              style: GoogleFonts.interTight(
+                fontSize: 13.5,
+                fontWeight: widget.isActive ? FontWeight.w500 : FontWeight.w400,
+                color: widget.isActive
+                    ? c.ink
+                    : (_hovered ? c.ink2 : c.muted),
+                letterSpacing: -0.07,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

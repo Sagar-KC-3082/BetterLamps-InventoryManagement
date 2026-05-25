@@ -4,6 +4,7 @@ import '../models/filament.dart';
 import '../models/product.dart';
 import '../models/sale.dart';
 import '../models/expense.dart';
+import '../models/lead.dart';
 
 class DatabaseService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,16 +14,19 @@ class DatabaseService extends ChangeNotifier {
   static const String _productsCollection = 'products';
   static const String _salesCollection = 'sales';
   static const String _expensesCollection = 'expenses';
+  static const String _leadsCollection = 'leads';
 
   List<Filament> _filaments = [];
   List<Product> _products = [];
   List<Sale> _sales = [];
   List<Expense> _expenses = [];
+  List<Lead> _leads = [];
 
   List<Filament> get filaments => _filaments;
   List<Product> get products => _products;
   List<Sale> get sales => _sales;
   List<Expense> get expenses => _expenses;
+  List<Lead> get leads => _leads;
 
   Future<void> init() async {
     // Set up real-time listeners for all collections
@@ -30,6 +34,7 @@ class DatabaseService extends ChangeNotifier {
     _listenToProducts();
     _listenToSales();
     _listenToExpenses();
+    _listenToLeads();
   }
 
   // Real-time listeners
@@ -80,6 +85,19 @@ class DatabaseService extends ChangeNotifier {
         .listen((snapshot) {
       _expenses = snapshot.docs
           .map((doc) => Expense.fromMap(doc.data()))
+          .toList();
+      notifyListeners();
+    });
+  }
+
+  void _listenToLeads() {
+    _firestore
+        .collection(_leadsCollection)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      _leads = snapshot.docs
+          .map((doc) => Lead.fromMap(doc.data()))
           .toList();
       notifyListeners();
     });
@@ -173,6 +191,55 @@ class DatabaseService extends ChangeNotifier {
 
   Future<void> deleteExpense(String id) async {
     await _firestore.collection(_expensesCollection).doc(id).delete();
+  }
+
+  // Lead operations
+  Future<void> addLead(Lead lead) async {
+    await _firestore
+        .collection(_leadsCollection)
+        .doc(lead.id)
+        .set(lead.toMap());
+  }
+
+  Future<void> updateLead(Lead lead) async {
+    await _firestore
+        .collection(_leadsCollection)
+        .doc(lead.id)
+        .update(lead.toMap());
+  }
+
+  Future<void> deleteLead(String id) async {
+    await _firestore.collection(_leadsCollection).doc(id).delete();
+  }
+
+  Lead? getLeadById(String id) {
+    try {
+      return _leads.firstWhere((l) => l.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Lead stats
+  int get totalLeadsCount => _leads.length;
+
+  int get convertedLeadsCount =>
+      _leads.where((l) => l.status == LeadStatus.converted || l.didBuy).length;
+
+  int get lostLeadsCount =>
+      _leads.where((l) => l.status == LeadStatus.lost).length;
+
+  int get pendingFollowUpsCount =>
+      _leads.where((l) => l.isOverdueFollowUp).length;
+
+  double get revenueFromLeads => _leads.fold(
+        0.0,
+        (sum, l) => sum + (l.finalSellingAmount ?? 0.0),
+      );
+
+  double get leadConversionRate {
+    if (_leads.isEmpty) return 0;
+    return convertedLeadsCount / _leads.length * 100;
   }
 
   // Stats
