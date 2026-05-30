@@ -15,7 +15,9 @@
       "Read(//Users/sagar/development/flutter/bin/**)",
       "Read(//opt/homebrew/bin/**)",
       "Read(//Users/sagar/**)",
-      "Bash(/Users/sagar/fvm/versions/3.32.1/bin/flutter pub *)"
+      "Bash(/Users/sagar/fvm/versions/3.32.1/bin/flutter pub *)",
+      "Bash(~/.flutter/bin/flutter analyze *)",
+      "Bash(/Users/sagar/fvm/versions/3.35.7/bin/flutter analyze *)"
     ]
   }
 }

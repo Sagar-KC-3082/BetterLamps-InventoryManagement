@@ -212,7 +212,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                     children: [
                       Text(
                         d.title,
-                        style: GoogleFonts.interTight(
+                        style: GoogleFonts.inter(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w500,
                           color: c.ink,
@@ -222,7 +222,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                       if (d.message != null)
                         Text(
                           d.message!,
-                          style: GoogleFonts.interTight(
+                          style: GoogleFonts.inter(
                             fontSize: 12.5,
                             color: c.muted,
                             letterSpacing: -0.06,
@@ -241,7 +241,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                     style: TextButton.styleFrom(
                       foregroundColor: c.coral,
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      textStyle: GoogleFonts.interTight(
+                      textStyle: GoogleFonts.inter(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w500,
                       ),

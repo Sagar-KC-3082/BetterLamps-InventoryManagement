@@ -247,7 +247,7 @@ class _TopBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
               'Better Lamps.',
-              style: GoogleFonts.newsreader(
+              style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: c.ink,
@@ -290,7 +290,7 @@ class _TopBar extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       '⌘K',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: GoogleFonts.inter(
                         fontSize: 10,
                         color: c.muted,
                         fontWeight: FontWeight.w500,
@@ -363,7 +363,7 @@ class _NavTabState extends State<_NavTab> {
           child: Center(
             child: Text(
               widget.label,
-              style: GoogleFonts.interTight(
+              style: GoogleFonts.inter(
                 fontSize: 13.5,
                 fontWeight: widget.isActive ? FontWeight.w500 : FontWeight.w400,
                 color: widget.isActive

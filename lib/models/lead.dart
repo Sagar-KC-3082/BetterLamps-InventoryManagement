@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum LeadSource {
   instagramDm,
   instagramComment,
@@ -30,6 +32,24 @@ enum LeadSource {
   }
 
   static LeadSource fromString(String value) {
+    switch (value) {
+      case 'Instagram DM':
+        return LeadSource.instagramDm;
+      case 'Instagram Comment':
+        return LeadSource.instagramComment;
+      case 'Instagram Ad':
+        return LeadSource.instagramAd;
+      case 'TikTok':
+        return LeadSource.tiktok;
+      case 'Facebook':
+        return LeadSource.facebook;
+      case 'Referral':
+        return LeadSource.referral;
+      case 'Repeat Customer':
+        return LeadSource.repeatCustomer;
+      case 'Other':
+        return LeadSource.other;
+    }
     return LeadSource.values.firstWhere(
       (e) => e.name == value,
       orElse: () => LeadSource.other,
@@ -66,6 +86,22 @@ enum LeadStatus {
   }
 
   static LeadStatus fromString(String value) {
+    switch (value) {
+      case 'New Lead':
+        return LeadStatus.newLead;
+      case 'Replied':
+        return LeadStatus.replied;
+      case 'Negotiating':
+        return LeadStatus.negotiating;
+      case 'Interested':
+        return LeadStatus.interested;
+      case 'Waiting':
+        return LeadStatus.waiting;
+      case 'Converted':
+        return LeadStatus.converted;
+      case 'Lost':
+        return LeadStatus.lost;
+    }
     return LeadStatus.values.firstWhere(
       (e) => e.name == value,
       orElse: () => LeadStatus.newLead,
@@ -90,6 +126,14 @@ enum LeadGender {
   }
 
   static LeadGender fromString(String value) {
+    switch (value) {
+      case 'Male':
+        return LeadGender.male;
+      case 'Female':
+        return LeadGender.female;
+      case 'Other':
+        return LeadGender.other;
+    }
     return LeadGender.values.firstWhere(
       (e) => e.name == value,
       orElse: () => LeadGender.other,
@@ -132,6 +176,26 @@ enum LostReason {
   }
 
   static LostReason fromString(String value) {
+    switch (value) {
+      case 'Too Expensive':
+        return LostReason.tooExpensive;
+      case 'No Response':
+        return LostReason.noResponse;
+      case 'Bought Elsewhere':
+        return LostReason.boughtElsewhere;
+      case 'Just Exploring':
+        return LostReason.justExploring;
+      case 'Delivery Issue':
+        return LostReason.deliveryIssue;
+      case 'Not Interested':
+        return LostReason.notInterested;
+      case 'Waiting for Salary':
+        return LostReason.waitingForSalary;
+      case 'Timing Issue':
+        return LostReason.timingIssue;
+      case 'Other':
+        return LostReason.other;
+    }
     return LostReason.values.firstWhere(
       (e) => e.name == value,
       orElse: () => LostReason.other,
@@ -240,55 +304,130 @@ class Lead {
     };
   }
 
+  /// Like toMap() but replaces null optional fields with FieldValue.delete()
+  /// so Firestore actually clears them when doing a full .set() overwrite.
+  Map<String, dynamic> toFirestoreMap() {
+    dynamic firestoreValue(dynamic value) => value ?? FieldValue.delete();
+    return {
+      'id': id,
+      'name': name,
+      'instaId': firestoreValue(instaId),
+      'gender': firestoreValue(gender?.name),
+      'age': firestoreValue(age),
+      'contactNumber': firestoreValue(contactNumber),
+      'alternateContact': firestoreValue(alternateContact),
+      'address': firestoreValue(address),
+      'source': firestoreValue(source?.name),
+      'interestedProductIds': interestedProductIds,
+      'budgetRange': firestoreValue(budgetRange),
+      'askedForDiscount': askedForDiscount,
+      'expectedDeliveryDate': firestoreValue(
+        expectedDeliveryDate?.toIso8601String(),
+      ),
+      'quantityInterested': firestoreValue(quantityInterested),
+      'customRequirements': firestoreValue(customRequirements),
+      'status': status.name,
+      'didBuy': didBuy,
+      'purchasedProductIds': purchasedProductIds,
+      'finalSellingAmount': firestoreValue(finalSellingAmount),
+      'linkedSaleId': firestoreValue(linkedSaleId),
+      'lostReason': firestoreValue(lostReason?.name),
+      'lostReasonNote': firestoreValue(lostReasonNote),
+      'followUpDate': firestoreValue(followUpDate?.toIso8601String()),
+      'lastContactedDate': firestoreValue(lastContactedDate?.toIso8601String()),
+      'inquireDate': firestoreValue(inquireDate?.toIso8601String()),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
   factory Lead.fromMap(Map<String, dynamic> map) {
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      if (value is String && value.trim().isNotEmpty) {
+        return DateTime.tryParse(value);
+      }
+      return null;
+    }
+
+    int? parseInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value);
+      return null;
+    }
+
+    double? parseDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value);
+      return null;
+    }
+
+    String? parseString(dynamic value) {
+      if (value == null) return null;
+      final text = value.toString().trim();
+      return text.isEmpty ? null : text;
+    }
+
+    List<String> parseStringList(dynamic value) {
+      if (value is Iterable) {
+        return value
+            .map((item) => item?.toString())
+            .whereType<String>()
+            .where((item) => item.trim().isNotEmpty)
+            .toList();
+      }
+      return const [];
+    }
+
+    final now = DateTime.now();
+    final createdAt =
+        parseDate(map['createdAt']) ??
+        parseDate(map['inquireDate']) ??
+        parseDate(map['followUpDate']) ??
+        now;
+    final updatedAt = parseDate(map['updatedAt']) ?? createdAt;
+
     return Lead(
-      id: map['id'] as String,
-      name: map['name'] as String,
-      instaId: map['instaId'] as String?,
+      id: parseString(map['id']) ?? '',
+      name: parseString(map['name']) ?? '',
+      instaId: parseString(map['instaId']),
       gender: map['gender'] != null
-          ? LeadGender.fromString(map['gender'] as String)
+          ? LeadGender.fromString(map['gender'].toString())
           : null,
-      age: map['age'] as int?,
-      contactNumber: map['contactNumber'] as String?,
-      alternateContact: map['alternateContact'] as String?,
-      address: map['address'] as String?,
+      age: parseInt(map['age']),
+      contactNumber: parseString(map['contactNumber']),
+      alternateContact: parseString(map['alternateContact']),
+      address: parseString(map['address']),
       source: map['source'] != null
-          ? LeadSource.fromString(map['source'] as String)
+          ? LeadSource.fromString(map['source'].toString())
           : null,
-      interestedProductIds:
-          List<String>.from(map['interestedProductIds'] as List? ?? []),
-      budgetRange: map['budgetRange'] as String?,
+      interestedProductIds: parseStringList(map['interestedProductIds']),
+      budgetRange: parseString(map['budgetRange']),
       askedForDiscount: map['askedForDiscount'] as bool? ?? false,
-      expectedDeliveryDate: map['expectedDeliveryDate'] != null
-          ? DateTime.parse(map['expectedDeliveryDate'] as String)
-          : null,
-      quantityInterested: map['quantityInterested'] as int?,
-      customRequirements: map['customRequirements'] as String?,
+      expectedDeliveryDate: parseDate(map['expectedDeliveryDate']),
+      quantityInterested: parseInt(map['quantityInterested']),
+      customRequirements: parseString(map['customRequirements']),
       status: map['status'] != null
-          ? LeadStatus.fromString(map['status'] as String)
+          ? LeadStatus.fromString(map['status'].toString())
           : LeadStatus.newLead,
       didBuy: map['didBuy'] as bool? ?? false,
-      purchasedProductIds:
-          List<String>.from(map['purchasedProductIds'] as List? ?? []),
-      finalSellingAmount: map['finalSellingAmount'] != null
-          ? (map['finalSellingAmount'] as num).toDouble()
-          : null,
-      linkedSaleId: map['linkedSaleId'] as String?,
+      purchasedProductIds: parseStringList(map['purchasedProductIds']),
+      finalSellingAmount: parseDouble(map['finalSellingAmount']),
+      linkedSaleId: parseString(map['linkedSaleId']),
       lostReason: map['lostReason'] != null
-          ? LostReason.fromString(map['lostReason'] as String)
+          ? LostReason.fromString(map['lostReason'].toString())
           : null,
-      lostReasonNote: map['lostReasonNote'] as String?,
-      followUpDate: map['followUpDate'] != null
-          ? DateTime.parse(map['followUpDate'] as String)
-          : null,
-      lastContactedDate: map['lastContactedDate'] != null
-          ? DateTime.parse(map['lastContactedDate'] as String)
-          : null,
-      inquireDate: map['inquireDate'] != null
-          ? DateTime.parse(map['inquireDate'] as String)
-          : null,
-      createdAt: DateTime.parse(map['createdAt'] as String),
-      updatedAt: DateTime.parse(map['updatedAt'] as String),
+      lostReasonNote: parseString(map['lostReasonNote']),
+      followUpDate: parseDate(map['followUpDate']),
+      lastContactedDate: parseDate(map['lastContactedDate']),
+      inquireDate: parseDate(map['inquireDate']),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 

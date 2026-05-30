@@ -141,14 +141,14 @@ class _AddLeadPageState extends State<AddLeadPage> {
                   ),
                   const SizedBox(width: 12),
                   Text('New Lead',
-                      style: GoogleFonts.newsreader(
+                      style: GoogleFonts.inter(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
                           color: c.ink,
                           letterSpacing: -0.3)),
                   const Spacer(),
                   Text('⌘S  save   esc  discard',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: GoogleFonts.inter(
                           fontSize: 9.5, color: c.faint, letterSpacing: 0.5)),
                 ],
               ),
@@ -434,7 +434,7 @@ class _GroupLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
-      style: GoogleFonts.jetBrainsMono(
+      style: GoogleFonts.inter(
         fontSize: 9.5,
         fontWeight: FontWeight.w600,
         color: c.muted,
@@ -495,7 +495,7 @@ class _DateTimeField extends StatelessWidget {
           children: [
             Text(
               DateFormat('MMM d, yyyy').format(dateTime),
-              style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
+              style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -509,7 +509,7 @@ class _DateTimeField extends StatelessWidget {
                   ),
                   child: Text(
                     DateFormat('h:mm a').format(dateTime),
-                    style: GoogleFonts.jetBrainsMono(
+                    style: GoogleFonts.inter(
                         fontSize: 10.5, color: c.muted, letterSpacing: 0.3),
                   ),
                 ),
@@ -564,7 +564,7 @@ class _DateField extends StatelessWidget {
               hasDate
                   ? DateFormat('MMM d, yyyy').format(date!)
                   : (placeholder.isEmpty ? DateFormat('MMM d, yyyy').format(DateTime.now()) : placeholder),
-              style: GoogleFonts.interTight(
+              style: GoogleFonts.inter(
                 fontSize: 13.5,
                 color: hasDate ? c.ink : c.muted,
               ),
@@ -621,7 +621,7 @@ class _BLDropdown<T> extends StatelessWidget {
             borderSide: BorderSide(color: c.coral, width: 1.5)),
       ),
       dropdownColor: c.bg2,
-      style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
+      style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
       items: items.map((dd) {
         final hasImage = dd.imageUrl != null && dd.imageUrl!.isNotEmpty;
         return DropdownMenuItem<T>(
@@ -631,12 +631,12 @@ class _BLDropdown<T> extends StatelessWidget {
                   _MiniThumb(url: dd.imageUrl!, c: c),
                   const SizedBox(width: 8),
                   Text(dd.label,
-                      style: GoogleFonts.interTight(
+                      style: GoogleFonts.inter(
                           fontSize: 13.5,
                           color: dd.muted ? c.muted : c.ink)),
                 ])
               : Text(dd.label,
-                  style: GoogleFonts.interTight(
+                  style: GoogleFonts.inter(
                       fontSize: 13.5,
                       color: dd.muted ? c.muted : c.ink)),
         );

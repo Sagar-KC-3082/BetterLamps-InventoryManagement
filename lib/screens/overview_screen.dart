@@ -91,7 +91,7 @@ class OverviewScreen extends StatelessWidget {
                           ? Padding(
                               padding: const EdgeInsets.all(20),
                               child: Text('All products are well-stocked.',
-                                  style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)),
+                                  style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)),
                             )
                           : Column(
                               children: [
@@ -104,7 +104,7 @@ class OverviewScreen extends StatelessWidget {
                                         children: [
                                           Expanded(
                                             child: Text(p.name,
-                                                style: GoogleFonts.interTight(
+                                                style: GoogleFonts.inter(
                                                     fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500)),
                                           ),
                                           SizedBox(
@@ -139,7 +139,7 @@ class OverviewScreen extends StatelessWidget {
                           ? Padding(
                               padding: const EdgeInsets.all(20),
                               child: Text('No sales yet.',
-                                  style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)),
+                                  style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)),
                             )
                           : Column(
                               children: recentSales.map((s) {
@@ -153,7 +153,7 @@ class OverviewScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         DateFormat('MMM d').format(s.saleDate),
-                                        style: GoogleFonts.jetBrainsMono(
+                                        style: GoogleFonts.inter(
                                           fontSize: 10.5,
                                           color: c.muted,
                                           letterSpacing: 0.5,
@@ -166,7 +166,7 @@ class OverviewScreen extends StatelessWidget {
                                           children: [
                                             Text(
                                               product?.name ?? 'Unknown',
-                                              style: GoogleFonts.interTight(
+                                              style: GoogleFonts.inter(
                                                 fontSize: 13,
                                                 color: c.ink,
                                                 fontWeight: FontWeight.w500,
@@ -176,7 +176,7 @@ class OverviewScreen extends StatelessWidget {
                                             ),
                                             Text(
                                               s.customer.name,
-                                              style: GoogleFonts.interTight(
+                                              style: GoogleFonts.inter(
                                                 fontSize: 11.5,
                                                 color: c.muted,
                                               ),
@@ -193,7 +193,7 @@ class OverviewScreen extends StatelessWidget {
                                         ),
                                         child: Text(
                                           'NRS ${s.price.toStringAsFixed(0)}',
-                                          style: GoogleFonts.jetBrainsMono(
+                                          style: GoogleFonts.inter(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                             color: c.moss,
@@ -222,7 +222,7 @@ class OverviewScreen extends StatelessWidget {
                     ? Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text('No leads yet.',
-                            style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)),
+                            style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)),
                       )
                     : Column(
                         children: recentLeads.map((lead) {
@@ -234,7 +234,7 @@ class OverviewScreen extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(lead.name,
-                                        style: GoogleFonts.interTight(
+                                        style: GoogleFonts.inter(
                                             fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500)),
                                   ),
                                   BLStatusPill(
@@ -245,7 +245,7 @@ class OverviewScreen extends StatelessWidget {
                                   if (lead.followUpDate != null)
                                     Text(
                                       'Follow up: ${DateFormat('MMM d').format(lead.followUpDate!)}',
-                                      style: GoogleFonts.jetBrainsMono(
+                                      style: GoogleFonts.inter(
                                         fontSize: 10.5,
                                         color: isOverdue ? c.coral : c.muted,
                                         letterSpacing: 0.5,
@@ -294,20 +294,20 @@ class _CriticalStockHeader extends StatelessWidget {
         children: [
           Expanded(
             child: Text('PRODUCT',
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
           ),
           SizedBox(
             width: 120,
             child: Text('STOCK',
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
           ),
           const SizedBox(width: 16),
           SizedBox(
             width: 80,
             child: Text('STATUS',
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
           ),
         ],
@@ -376,7 +376,7 @@ class _StatTile extends StatelessWidget {
         children: [
           Text(
             stat.label,
-            style: GoogleFonts.jetBrainsMono(
+            style: GoogleFonts.inter(
               fontSize: 9.5,
               color: c.muted,
               fontWeight: FontWeight.w500,
@@ -386,7 +386,7 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             stat.value,
-            style: GoogleFonts.newsreader(
+            style: GoogleFonts.inter(
               fontSize: 26,
               fontWeight: FontWeight.w500,
               

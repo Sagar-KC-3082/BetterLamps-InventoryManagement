@@ -1,3 +1,5 @@
+import 'dart:convert';
+import '../models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
@@ -69,7 +71,7 @@ class BLStatusPill extends StatelessWidget {
               label.toUpperCase(),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: GoogleFonts.jetBrainsMono(
+              style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: textColor,
@@ -131,7 +133,7 @@ class BLStockBar extends StatelessWidget {
             children: [
               TextSpan(
                 text: '$available',
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
                   color: isLow ? c.coral : c.ink2,
@@ -140,7 +142,7 @@ class BLStockBar extends StatelessWidget {
               ),
               TextSpan(
                 text: '/$total',
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w400,
                   color: c.muted,
@@ -195,7 +197,7 @@ class BLSectionCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Text(
                 title!,
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: c.ink,
@@ -247,7 +249,7 @@ class BLPageHeader extends StatelessWidget {
               children: [
                 Text(
                   breadcrumb.toUpperCase(),
-                  style: GoogleFonts.jetBrainsMono(
+                  style: GoogleFonts.inter(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w500,
                     color: c.muted,
@@ -257,7 +259,7 @@ class BLPageHeader extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   title,
-                  style: GoogleFonts.newsreader(
+                  style: GoogleFonts.inter(
                     fontSize: 26,
                     fontWeight: FontWeight.w500,
                     color: c.ink,
@@ -268,7 +270,7 @@ class BLPageHeader extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle!,
-                    style: GoogleFonts.interTight(
+                    style: GoogleFonts.inter(
                       fontSize: 13.5,
                       color: c.muted,
                       letterSpacing: -0.07,
@@ -335,7 +337,7 @@ class BLFilterRail extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
                   child: Text(
                     group.label.toUpperCase(),
-                    style: GoogleFonts.jetBrainsMono(
+                    style: GoogleFonts.inter(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w500,
                       color: c.muted,
@@ -403,12 +405,12 @@ class _FilterRowState extends State<_FilterRow> {
           child: Text(
             widget.item.label,
             style: widget.item.isAction
-                ? GoogleFonts.newsreader(
+                ? GoogleFonts.inter(
                     fontSize: 13.5,
                     color: c.coral,
                     letterSpacing: -0.2,
                   )
-                : GoogleFonts.interTight(
+                : GoogleFonts.inter(
                     fontSize: 13.5,
                     color: widget.isSelected ? c.ink : c.ink2,
                     fontWeight: widget.isSelected
@@ -522,7 +524,7 @@ class MoneyText extends StatelessWidget {
         children: [
           TextSpan(
             text: 'NRS ',
-            style: GoogleFonts.jetBrainsMono(
+            style: GoogleFonts.inter(
               fontSize: 10,
               color: c.muted,
               fontWeight: FontWeight.w500,
@@ -530,7 +532,7 @@ class MoneyText extends StatelessWidget {
           ),
           TextSpan(
             text: amount.toStringAsFixed(0),
-            style: GoogleFonts.newsreader(
+            style: GoogleFonts.inter(
               fontSize: fontSize,
               fontWeight: FontWeight.w500,
               color: color,
@@ -579,7 +581,7 @@ class BLInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.blColors;
-    final monoStyle = GoogleFonts.jetBrainsMono(
+    final monoStyle = GoogleFonts.inter(
       fontSize: 11,
       color: c.muted,
       fontWeight: FontWeight.w500,
@@ -593,7 +595,7 @@ class BLInput extends StatelessWidget {
       onChanged: onChanged,
       readOnly: readOnly,
       onTap: onTap,
-      style: GoogleFonts.interTight(
+      style: GoogleFonts.inter(
         fontSize: 13.5,
         color: c.ink,
         letterSpacing: -0.07,
@@ -666,7 +668,7 @@ class BLButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(7),
           side: BorderSide(color: borderColor),
         ),
-        textStyle: GoogleFonts.interTight(
+        textStyle: GoogleFonts.inter(
           fontSize: 13.5,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.07,
@@ -741,7 +743,7 @@ class BLConfirmDialog extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                   color: c.ink,
@@ -751,7 +753,7 @@ class BLConfirmDialog extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 body,
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                   fontSize: 13.5,
                   color: c.ink2,
                   letterSpacing: -0.07,
@@ -844,6 +846,68 @@ class FilamentSwatch extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.circular(6),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ProductThumb — product image thumbnail with letter fallback
+// ---------------------------------------------------------------------------
+
+class ProductThumb extends StatelessWidget {
+  final Product? product;
+  final double size;
+  final double radius;
+
+  const ProductThumb({
+    super.key,
+    required this.product,
+    this.size = 32,
+    this.radius = 6,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    final name = product?.name ?? '';
+    final images = product?.images ?? [];
+
+    Widget imageWidget;
+    if (images.isNotEmpty) {
+      final raw = images.first;
+      try {
+        final b64 = raw.contains(',') ? raw.split(',').last : raw;
+        final bytes = base64Decode(b64);
+        imageWidget = Image.memory(bytes, fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _letterFallback(name, c));
+      } catch (_) {
+        imageWidget = _letterFallback(name, c);
+      }
+    } else {
+      imageWidget = _letterFallback(name, c);
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Container(
+        width: size,
+        height: size,
+        color: c.bg3,
+        child: imageWidget,
+      ),
+    );
+  }
+
+  Widget _letterFallback(String name, BLColors c) {
+    return Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: GoogleFonts.inter(
+          fontSize: size * 0.42,
+          color: c.muted,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

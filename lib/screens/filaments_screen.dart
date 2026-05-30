@@ -66,11 +66,11 @@ class FilamentsScreen extends StatelessWidget {
                         Icon(Icons.layers_outlined, size: 48, color: c.faint),
                         const SizedBox(height: 16),
                         Text('No filaments yet.',
-                            style: GoogleFonts.newsreader(
+                            style: GoogleFonts.inter(
                                 fontSize: 18, color: c.muted)),
                         const SizedBox(height: 4),
                         Text('Add your first filament to start tracking.',
-                            style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)),
+                            style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)),
                       ],
                     ),
                   )
@@ -135,11 +135,11 @@ class _StatCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
             const SizedBox(height: 6),
             Text(value,
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 22, fontWeight: FontWeight.w500,
                     color: isCoral ? c.coral : c.ink, letterSpacing: -0.5)),
           ],
@@ -160,7 +160,7 @@ class _ColH extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(label,
         textAlign: center ? TextAlign.center : TextAlign.left,
-        style: GoogleFonts.jetBrainsMono(
+        style: GoogleFonts.inter(
             fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5));
   }
 }
@@ -188,11 +188,11 @@ class _FilamentRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('${filament.type} — ${filament.color}',
-                      style: GoogleFonts.interTight(
+                      style: GoogleFonts.inter(
                           fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500,
                           letterSpacing: -0.07)),
                   Text(DateFormat('MMM d, yyyy').format(filament.purchaseDate),
-                      style: GoogleFonts.jetBrainsMono(
+                      style: GoogleFonts.inter(
                           fontSize: 10, color: c.muted, letterSpacing: 0.3)),
                 ],
               ),
@@ -200,12 +200,12 @@ class _FilamentRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(filament.supplier,
-                  style: GoogleFonts.interTight(fontSize: 13, color: c.ink2)),
+                  style: GoogleFonts.inter(fontSize: 13, color: c.ink2)),
             ),
             Expanded(
               child: Text(
                 'NRS ${filament.costPerUnit.toStringAsFixed(0)}',
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 14, fontWeight: FontWeight.w500, color: c.ink, letterSpacing: -0.3),
               ),
             ),
@@ -234,7 +234,7 @@ class _FilamentRow extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: Text(
                           '${filament.quantity}',
-                          style: GoogleFonts.newsreader(
+                          style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: isLow ? c.coral : c.ink,
@@ -402,7 +402,7 @@ class _FilamentFormDialogState extends State<_FilamentFormDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(isEdit ? 'Edit Filament' : 'Add Filament',
-                      style: GoogleFonts.newsreader(
+                      style: GoogleFonts.inter(
                           fontSize: 20, fontWeight: FontWeight.w500,
                           color: c.ink, letterSpacing: -0.4)),
                   IconButton(
@@ -462,7 +462,7 @@ class _FilamentFormDialogState extends State<_FilamentFormDialog> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(DateFormat('MMM d, yyyy').format(_purchaseDate),
-                              style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink)),
+                              style: GoogleFonts.inter(fontSize: 13.5, color: c.ink)),
                           Icon(Icons.calendar_today_outlined, size: 16, color: c.muted),
                         ],
                       ),

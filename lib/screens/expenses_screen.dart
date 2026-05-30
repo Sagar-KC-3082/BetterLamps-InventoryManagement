@@ -110,7 +110,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     child: filtered.isEmpty
                         ? Center(
                             child: Text('No expenses yet.',
-                                style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)))
+                                style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)))
                         : ListView.builder(
                             itemCount: filtered.length,
                             itemBuilder: (ctx, i) => _ExpenseRow(expense: filtered[i]),
@@ -142,11 +142,11 @@ class _StatCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5)),
             const SizedBox(height: 6),
             Text(value,
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 22, fontWeight: FontWeight.w500, color: c.ink, letterSpacing: -0.5)),
           ],
         ),
@@ -167,7 +167,7 @@ class _ColH extends StatelessWidget {
     return Text(
       label,
       textAlign: right ? TextAlign.right : TextAlign.left,
-      style: GoogleFonts.jetBrainsMono(
+      style: GoogleFonts.inter(
           fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5),
     );
   }
@@ -189,7 +189,7 @@ class _ExpenseRow extends StatelessWidget {
               width: 80,
               child: Text(
                 DateFormat('MMM d').format(expense.date),
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 10.5, color: c.muted, letterSpacing: 0.5),
               ),
             ),
@@ -202,12 +202,12 @@ class _ExpenseRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(expense.name,
-                      style: GoogleFonts.interTight(
+                      style: GoogleFonts.inter(
                           fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500,
                           letterSpacing: -0.07)),
                   if (expense.notes != null)
                     Text(expense.notes!,
-                        style: GoogleFonts.interTight(
+                        style: GoogleFonts.inter(
                             fontSize: 11.5, color: c.muted, letterSpacing: -0.06)),
                 ],
               ),
@@ -217,7 +217,7 @@ class _ExpenseRow extends StatelessWidget {
               child: Text(
                 '− NRS ${expense.amount.toStringAsFixed(0)}',
                 textAlign: TextAlign.right,
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 14, fontWeight: FontWeight.w500,
                     color: c.berry, letterSpacing: -0.3),
               ),
@@ -233,7 +233,7 @@ class _ExpenseRow extends StatelessWidget {
                   PopupMenuItem(
                     value: 'delete',
                     child: Text('Delete',
-                        style: GoogleFonts.interTight(fontSize: 13, color: c.berry)),
+                        style: GoogleFonts.inter(fontSize: 13, color: c.berry)),
                   ),
                 ],
                 onSelected: (v) {

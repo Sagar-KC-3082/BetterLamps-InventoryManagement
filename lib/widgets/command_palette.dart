@@ -176,7 +176,7 @@ class _CommandPaletteState extends State<CommandPalette>
                             child: TextField(
                               controller: _queryCtrl,
                               focusNode: _focusNode,
-                              style: GoogleFonts.interTight(
+                              style: GoogleFonts.inter(
                                 fontSize: 14,
                                 color: c.ink,
                                 letterSpacing: -0.07,
@@ -188,7 +188,7 @@ class _CommandPaletteState extends State<CommandPalette>
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                hintStyle: GoogleFonts.interTight(color: c.muted, fontSize: 14),
+                                hintStyle: GoogleFonts.inter(color: c.muted, fontSize: 14),
                                 fillColor: Colors.transparent,
                                 filled: true,
                               ),
@@ -201,7 +201,7 @@ class _CommandPaletteState extends State<CommandPalette>
                                     padding: const EdgeInsets.all(32),
                                     child: Text(
                                       'No commands found.',
-                                      style: GoogleFonts.interTight(
+                                      style: GoogleFonts.inter(
                                         color: c.muted,
                                         fontSize: 13.5,
                                       ),
@@ -222,7 +222,7 @@ class _CommandPaletteState extends State<CommandPalette>
                                               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                                               child: Text(
                                                 item.group.toUpperCase(),
-                                                style: GoogleFonts.jetBrainsMono(
+                                                style: GoogleFonts.inter(
                                                   fontSize: 9.5,
                                                   color: c.muted,
                                                   fontWeight: FontWeight.w500,
@@ -253,15 +253,15 @@ class _CommandPaletteState extends State<CommandPalette>
                               children: [
                                 _KeyHint('↑↓', c),
                                 const SizedBox(width: 4),
-                                Text('navigate', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted)),
+                                Text('navigate', style: GoogleFonts.inter(fontSize: 10, color: c.muted)),
                                 const SizedBox(width: 12),
                                 _KeyHint('↵', c),
                                 const SizedBox(width: 4),
-                                Text('select', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted)),
+                                Text('select', style: GoogleFonts.inter(fontSize: 10, color: c.muted)),
                                 const SizedBox(width: 12),
                                 _KeyHint('esc', c),
                                 const SizedBox(width: 4),
-                                Text('close', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted)),
+                                Text('close', style: GoogleFonts.inter(fontSize: 10, color: c.muted)),
                               ],
                             ),
                           ),
@@ -296,7 +296,7 @@ class _KeyHint extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.jetBrainsMono(
+        style: GoogleFonts.inter(
           fontSize: 9.5,
           color: c.ink2,
           fontWeight: FontWeight.w500,
@@ -344,7 +344,7 @@ class _CommandRow extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 cmd.label,
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                   fontSize: 13.5,
                   color: isSelected ? c.ink : c.ink2,
                   fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,

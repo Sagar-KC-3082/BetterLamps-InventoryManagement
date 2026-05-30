@@ -85,7 +85,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       children: [
                         Text(
                           '${filtered.length} products',
-                          style: GoogleFonts.jetBrainsMono(
+                          style: GoogleFonts.inter(
                             fontSize: 10.5,
                             color: c.muted,
                             fontWeight: FontWeight.w500,
@@ -120,7 +120,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     child: filtered.isEmpty
                         ? Center(
                             child: Text('No products match this filter.',
-                                style: GoogleFonts.interTight(fontSize: 13.5, color: c.muted)))
+                                style: GoogleFonts.inter(fontSize: 13.5, color: c.muted)))
                         : ListView.builder(
                             itemCount: filtered.length,
                             itemBuilder: (context, i) =>
@@ -149,7 +149,7 @@ class _ColHeader extends StatelessWidget {
     return Text(
       label,
       textAlign: right ? TextAlign.right : TextAlign.left,
-      style: GoogleFonts.jetBrainsMono(
+      style: GoogleFonts.inter(
           fontSize: 9.5, color: c.muted, fontWeight: FontWeight.w500, letterSpacing: 1.5),
     );
   }
@@ -175,21 +175,7 @@ class _ProductRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: c.bg3,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: c.rule),
-              ),
-              child: Center(
-                child: Text(
-                  p.name.isNotEmpty ? p.name[0].toUpperCase() : '?',
-                  style: GoogleFonts.newsreader(fontSize: 16, color: c.muted, fontWeight: FontWeight.w500),
-                ),
-              ),
-            ),
+            ProductThumb(product: p, size: 36),
             const SizedBox(width: 12),
             Expanded(
               flex: 3,
@@ -197,10 +183,10 @@ class _ProductRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(p.name,
-                      style: GoogleFonts.interTight(
+                      style: GoogleFonts.inter(
                           fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500, letterSpacing: -0.07)),
                   Text(p.productCode,
-                      style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
+                      style: GoogleFonts.inter(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
                 ],
               ),
             ),
@@ -209,7 +195,7 @@ class _ProductRow extends StatelessWidget {
               child: Text(
                 'NRS ${p.currentSellingPrice.toStringAsFixed(0)}',
                 textAlign: TextAlign.right,
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 14, fontWeight: FontWeight.w500, color: c.ink, letterSpacing: -0.3),
               ),
             ),
@@ -225,7 +211,7 @@ class _ProductRow extends StatelessWidget {
               child: Text(
                 '${p.profitMargin.toStringAsFixed(0)}%',
                 textAlign: TextAlign.right,
-                style: GoogleFonts.interTight(
+                style: GoogleFonts.inter(
                     fontSize: 13, color: p.profitMargin > 30 ? c.moss : c.ink2, letterSpacing: -0.07),
               ),
             ),
@@ -247,7 +233,7 @@ class _ProductRow extends StatelessWidget {
                   PopupMenuItem(
                     value: 'delete',
                     child: Text('Delete',
-                        style: GoogleFonts.interTight(fontSize: 13, color: c.berry)),
+                        style: GoogleFonts.inter(fontSize: 13, color: c.berry)),
                   ),
                 ],
                 onSelected: (v) {

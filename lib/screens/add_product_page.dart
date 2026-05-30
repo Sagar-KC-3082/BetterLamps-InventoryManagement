@@ -135,7 +135,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   const SizedBox(width: 8),
                   Text(
                     'Add Product',
-                    style: GoogleFonts.newsreader(
+                    style: GoogleFonts.inter(
                         fontSize: 20, fontWeight: FontWeight.w500,
                         color: c.ink, letterSpacing: -0.4),
                   ),
@@ -318,10 +318,10 @@ class _AddProductPageState extends State<AddProductPage> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Margin',
-                                          style: GoogleFonts.interTight(fontSize: 13, color: c.muted)),
+                                          style: GoogleFonts.inter(fontSize: 13, color: c.muted)),
                                       Text(
                                         '${_margin.toStringAsFixed(1)}%',
-                                        style: GoogleFonts.interTight(
+                                        style: GoogleFonts.inter(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
                                           color: _margin > 30 ? c.moss : (_margin > 0 ? c.gold : c.berry),
@@ -343,7 +343,7 @@ class _AddProductPageState extends State<AddProductPage> {
                               ),
                               child: Text(
                                 'Pro tip: Aim for 35–45% margin on standard lamps. Higher for custom designs.',
-                                style: GoogleFonts.newsreader(
+                                style: GoogleFonts.inter(
                                     color: c.coral2, letterSpacing: -0.2),
                               ),
                             ),
@@ -366,7 +366,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 children: [
                   Text(
                     '⌘S save  ·  esc discard',
-                    style: GoogleFonts.jetBrainsMono(
+                    style: GoogleFonts.inter(
                         fontSize: 10, color: c.muted, letterSpacing: 0.5),
                   ),
                   const Spacer(),
@@ -405,7 +405,7 @@ class _FormSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.newsreader(
+          style: GoogleFonts.inter(
               fontSize: 16, fontWeight: FontWeight.w500,
               color: c.ink, letterSpacing: -0.27),
         ),
@@ -448,10 +448,10 @@ class _PreviewRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: GoogleFonts.interTight(
+              style: GoogleFonts.inter(
                   fontSize: 13, color: c.muted, letterSpacing: -0.07)),
           Text('NRS ${value.toStringAsFixed(0)}',
-              style: GoogleFonts.newsreader(
+              style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
                   color: textColor,

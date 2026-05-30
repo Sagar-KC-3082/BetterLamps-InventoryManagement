@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/lead.dart';
 import '../services/database_service.dart';
 import '../theme/app_theme.dart';
@@ -681,9 +682,11 @@ class _DatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.blColors;
     return InkWell(
+      borderRadius: BorderRadius.circular(7),
       onTap: () async {
-        final picked = await showDatePicker(
+        final pickedDate = await showDatePicker(
           context: context,
           initialDate: value ?? DateTime.now(),
           firstDate: DateTime(2020),
@@ -691,25 +694,53 @@ class _DatePickerField extends StatelessWidget {
               ? DateTime.now().add(const Duration(days: 365))
               : DateTime.now().add(const Duration(days: 1)),
         );
-        onChanged(picked);
+        if (pickedDate == null) return;
+        // ignore: use_build_context_synchronously
+        final pickedTime = await showTimePicker(
+          context: context,
+          initialTime: value != null
+              ? TimeOfDay.fromDateTime(value!)
+              : TimeOfDay.now(),
+        );
+        final merged = DateTime(
+          pickedDate.year, pickedDate.month, pickedDate.day,
+          pickedTime?.hour ?? value?.hour ?? 0,
+          pickedTime?.minute ?? value?.minute ?? 0,
+        );
+        onChanged(merged);
       },
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon:
-              const Icon(Icons.calendar_today_outlined, size: 20),
+          suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18),
         ),
-        child: Text(
-          value != null
-              ? DateFormat('MMM d, yyyy').format(value!)
-              : 'Not set',
-          style: TextStyle(
-            fontSize: 14,
-            color: value != null
-                ? context.textPrimary
-                : context.textSecondary.withOpacity(0.6),
-          ),
-        ),
+        child: value != null
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat('MMM d, yyyy').format(value!),
+                    style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: c.bg3,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: c.rule),
+                    ),
+                    child: Text(
+                      DateFormat('h:mm a').format(value!),
+                      style: GoogleFonts.inter(
+                          fontSize: 10.5, color: c.muted, letterSpacing: 0.3),
+                    ),
+                  ),
+                ],
+              )
+            : Text(
+                'Not set',
+                style: GoogleFonts.inter(fontSize: 13.5, color: c.faint),
+              ),
       ),
     );
   }

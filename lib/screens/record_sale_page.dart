@@ -23,6 +23,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
 
   String? _selectedProductId;
   final _priceCtrl = TextEditingController();
+  int _quantity = 1;
   DateTime _saleDate = DateTime.now();
 
   final _customerNameCtrl = TextEditingController();
@@ -30,15 +31,10 @@ class _RecordSalePageState extends State<RecordSalePage> {
   final _customerInstaCtrl = TextEditingController();
   final _customerAddressCtrl = TextEditingController();
 
-  String? _source;
-  String? _paymentBy;
+  SaleSource _source = SaleSource.instagramAd;
+  PaymentMethod _paymentMethod = PaymentMethod.bankTransfer;
   final _notesCtrl = TextEditingController();
   bool _followedUp = false;
-
-  final List<String> _sources = [
-    'Instagram DM', 'Instagram Ad', 'Referral', 'Walk-in', 'Other'
-  ];
-  final List<String> _paymentMethods = ['Cash', 'eSewa', 'Fonepay', 'Bank Transfer'];
 
   @override
   void dispose() {
@@ -58,9 +54,10 @@ class _RecordSalePageState extends State<RecordSalePage> {
     return product?.costPrice.totalCost ?? 0;
   }
 
-  double get _salePrice => double.tryParse(_priceCtrl.text) ?? 0;
-  double get _profit => _salePrice - _unitCost;
-  double get _margin => _salePrice > 0 ? (_profit / _salePrice * 100) : 0;
+  double get _unitPrice => double.tryParse(_priceCtrl.text) ?? 0;
+  double get _totalAmount => _unitPrice * _quantity;
+  double get _profit => _totalAmount - _unitCost * _quantity;
+  double get _margin => _totalAmount > 0 ? (_profit / _totalAmount * 100) : 0;
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -71,7 +68,9 @@ class _RecordSalePageState extends State<RecordSalePage> {
       id: const Uuid().v4(),
       saleDate: _saleDate,
       productId: _selectedProductId!,
-      price: _salePrice,
+      quantity: _quantity,
+      price: _unitPrice,
+      paymentMethod: _paymentMethod,
       customer: Customer(
         name: _customerNameCtrl.text.trim(),
         phone: _customerPhoneCtrl.text.trim(),
@@ -80,7 +79,6 @@ class _RecordSalePageState extends State<RecordSalePage> {
       ),
       source: _source,
       isFollowedUp: _followedUp,
-      accountSettledIn: _paymentBy ?? 'Sagar',
       notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
     );
 
@@ -91,7 +89,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
       Toaster.success(
         context,
         'Sale recorded',
-        message: '$productName → ${_customerNameCtrl.text} · NRS ${_salePrice.toStringAsFixed(0)}',
+        message: '$productName ×$_quantity → ${_customerNameCtrl.text} · NRS ${_totalAmount.toStringAsFixed(0)}',
       );
       context.pop();
     }
@@ -134,7 +132,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                   const SizedBox(width: 8),
                   Text(
                     'Record Sale',
-                    style: GoogleFonts.newsreader(
+                    style: GoogleFonts.inter(
                         fontSize: 20, fontWeight: FontWeight.w500,
                         color: c.ink, letterSpacing: -0.4),
                   ),
@@ -158,6 +156,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                               children: [
                                 DropdownButtonFormField<String>(
                                   value: _selectedProductId,
+                                  isExpanded: true,
                                   decoration: InputDecoration(
                                     labelText: 'Product',
                                     fillColor: c.bg2,
@@ -173,13 +172,22 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                         borderSide: BorderSide(color: c.coral, width: 1.5)),
                                   ),
                                   dropdownColor: c.bg2,
-                                  style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
+                                  style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
                                   items: db.products
                                       .map((p) => DropdownMenuItem(
                                             value: p.id,
-                                            child: Text(
-                                              '${p.name} (stock: ${p.availableStock})',
-                                              style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
+                                            child: Row(
+                                              children: [
+                                                ProductThumb(product: p, size: 28, radius: 4),
+                                                const SizedBox(width: 10),
+                                                Flexible(
+                                                  child: Text(
+                                                    '${p.name}  ·  stock: ${p.availableStock}',
+                                                    style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ))
                                       .toList(),
@@ -197,13 +205,24 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                   validator: (v) => v == null ? 'Select a product' : null,
                                 ),
                                 const SizedBox(height: 12),
-                                BLInput(
-                                    controller: _priceCtrl,
-                                    label: 'Sale price',
-                                    prefixText: 'NRS ',
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (_) => setState(() {}),
-                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: BLInput(
+                                          controller: _priceCtrl,
+                                          label: 'Price per unit',
+                                          prefixText: 'NRS ',
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (_) => setState(() {}),
+                                          validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    _QuantityStepper(
+                                      value: _quantity,
+                                      onChanged: (v) => setState(() => _quantity = v),
+                                    ),
+                                  ],
+                                ),
                                 const SizedBox(height: 12),
                                 InkWell(
                                   onTap: () async {
@@ -231,7 +250,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(DateFormat('MMM d, yyyy').format(_saleDate),
-                                            style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink)),
+                                            style: GoogleFonts.inter(fontSize: 13.5, color: c.ink)),
                                         Icon(Icons.calendar_today_outlined, size: 16, color: c.muted),
                                       ],
                                     ),
@@ -281,7 +300,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                               children: [
                                 Row(children: [
                                   Expanded(
-                                    child: DropdownButtonFormField<String>(
+                                    child: DropdownButtonFormField<SaleSource>(
                                       value: _source,
                                       decoration: InputDecoration(
                                         labelText: 'Source',
@@ -298,19 +317,19 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                             borderSide: BorderSide(color: c.coral, width: 1.5)),
                                       ),
                                       dropdownColor: c.bg2,
-                                      style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
-                                      items: _sources
-                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                      style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
+                                      items: SaleSource.values
+                                          .map((s) => DropdownMenuItem(value: s, child: Text(s.label)))
                                           .toList(),
-                                      onChanged: (v) => setState(() => _source = v),
+                                      onChanged: (v) => setState(() => _source = v ?? _source),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      value: _paymentBy,
+                                    child: DropdownButtonFormField<PaymentMethod>(
+                                      value: _paymentMethod,
                                       decoration: InputDecoration(
-                                        labelText: 'Payment by',
+                                        labelText: 'Payment method',
                                         filled: true,
                                         fillColor: c.bg2,
                                         border: OutlineInputBorder(
@@ -324,11 +343,11 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                             borderSide: BorderSide(color: c.coral, width: 1.5)),
                                       ),
                                       dropdownColor: c.bg2,
-                                      style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink),
-                                      items: _paymentMethods
-                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                      style: GoogleFonts.inter(fontSize: 13.5, color: c.ink),
+                                      items: PaymentMethod.values
+                                          .map((m) => DropdownMenuItem(value: m, child: Text(m.label)))
                                           .toList(),
-                                      onChanged: (v) => setState(() => _paymentBy = v),
+                                      onChanged: (v) => setState(() => _paymentMethod = v ?? _paymentMethod),
                                     ),
                                   ),
                                 ]),
@@ -345,7 +364,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                     activeColor: c.coral,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text('Followed up', style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink2)),
+                                  Text('Followed up', style: GoogleFonts.inter(fontSize: 13.5, color: c.ink2)),
                                 ]),
                               ],
                             ),
@@ -376,36 +395,62 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Better Lamps.',
-                                      style: GoogleFonts.newsreader(
+                                      style: GoogleFonts.inter(
                                           color: c.ink, letterSpacing: -0.3)),
                                   Divider(color: c.rule, height: 20),
                                   if (selectedProduct != null)
                                     Text(selectedProduct.name,
-                                        style: GoogleFonts.interTight(
+                                        style: GoogleFonts.inter(
                                             fontSize: 13.5, color: c.ink, fontWeight: FontWeight.w500)),
                                   if (_customerNameCtrl.text.isNotEmpty)
                                     Text(_customerNameCtrl.text,
-                                        style: GoogleFonts.interTight(fontSize: 13, color: c.muted)),
+                                        style: GoogleFonts.inter(fontSize: 13, color: c.muted)),
                                   const SizedBox(height: 12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Sale price',
-                                          style: GoogleFonts.interTight(fontSize: 13, color: c.muted)),
-                                      Text('NRS ${_salePrice.toStringAsFixed(0)}',
-                                          style: GoogleFonts.newsreader(
+                                      Text('Unit price',
+                                          style: GoogleFonts.inter(fontSize: 13, color: c.muted)),
+                                      Text('NRS ${_unitPrice.toStringAsFixed(0)}',
+                                          style: GoogleFonts.inter(
                                               fontSize: 14, color: c.ink, letterSpacing: -0.3)),
                                     ],
                                   ),
+                                  if (_quantity > 1) ...[
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Quantity',
+                                            style: GoogleFonts.inter(fontSize: 13, color: c.muted)),
+                                        Text('×$_quantity',
+                                            style: GoogleFonts.inter(
+                                                fontSize: 13, color: c.ink, letterSpacing: 0.3)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Total',
+                                            style: GoogleFonts.inter(
+                                                fontSize: 13, color: c.ink, fontWeight: FontWeight.w600)),
+                                        Text('NRS ${_totalAmount.toStringAsFixed(0)}',
+                                            style: GoogleFonts.inter(
+                                                fontSize: 14, color: c.ink,
+                                                fontWeight: FontWeight.w600, letterSpacing: -0.3)),
+                                      ],
+                                    ),
+                                  ],
                                   const SizedBox(height: 4),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Profit',
-                                          style: GoogleFonts.interTight(fontSize: 13, color: c.muted)),
+                                          style: GoogleFonts.inter(fontSize: 13, color: c.muted)),
                                       Text(
                                         'NRS ${_profit.toStringAsFixed(0)}',
-                                        style: GoogleFonts.newsreader(
+                                        style: GoogleFonts.inter(
                                           fontSize: 14,
                                           color: _profit >= 0 ? c.coral : c.berry,
                                           letterSpacing: -0.3,
@@ -417,7 +462,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            if (_salePrice > 0)
+                            if (_unitPrice > 0)
                               Container(
                                 padding: const EdgeInsets.all(14),
                                 decoration: BoxDecoration(
@@ -427,7 +472,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
                                 ),
                                 child: Text(
                                   'Margin on this sale is ${_margin.toStringAsFixed(1)}%.',
-                                  style: GoogleFonts.newsreader(
+                                  style: GoogleFonts.inter(
                                       color: c.moss, letterSpacing: -0.2),
                                 ),
                               ),
@@ -448,7 +493,7 @@ class _RecordSalePageState extends State<RecordSalePage> {
               child: Row(
                 children: [
                   Text('⌘S save  ·  esc discard',
-                      style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
+                      style: GoogleFonts.inter(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
                   const Spacer(),
                   BLButton(label: 'Cancel', kind: BLButtonKind.ghost, onPressed: () => context.pop()),
                   const SizedBox(width: 8),
@@ -458,6 +503,61 @@ class _RecordSalePageState extends State<RecordSalePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuantityStepper extends StatelessWidget {
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  const _QuantityStepper({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.blColors;
+    return Container(
+      decoration: BoxDecoration(
+        color: c.bg2,
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: c.rule),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 8),
+            child: Text('Qty',
+                style: GoogleFonts.inter(fontSize: 11, color: c.muted)),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.remove, size: 16, color: value > 1 ? c.ink : c.muted),
+                onPressed: value > 1 ? () => onChanged(value - 1) : null,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                constraints: const BoxConstraints(),
+              ),
+              SizedBox(
+                width: 28,
+                child: Text(
+                  '$value',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                      fontSize: 16, fontWeight: FontWeight.w500, color: c.ink),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.add, size: 16, color: c.ink),
+                onPressed: () => onChanged(value + 1),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -476,7 +576,7 @@ class _FormSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: GoogleFonts.newsreader(
+            style: GoogleFonts.inter(
                 fontSize: 16, fontWeight: FontWeight.w500,
                 color: c.ink, letterSpacing: -0.27)),
         const SizedBox(height: 16),

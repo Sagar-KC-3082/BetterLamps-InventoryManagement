@@ -278,7 +278,7 @@ class _Header extends StatelessWidget {
             child: Center(
               child: Text(
                 lead.name.isNotEmpty ? lead.name[0].toUpperCase() : '?',
-                style: GoogleFonts.newsreader(
+                style: GoogleFonts.inter(
                     fontSize: 20, fontWeight: FontWeight.w600, color: c.coral),
               ),
             ),
@@ -290,7 +290,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   lead.name,
-                  style: GoogleFonts.newsreader(
+                  style: GoogleFonts.inter(
                       fontSize: 19,
                       fontWeight: FontWeight.w500,
                       color: c.ink,
@@ -300,14 +300,14 @@ class _Header extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '@${extractInstaUsername(lead.instaId)}',
-                    style: GoogleFonts.jetBrainsMono(
+                    style: GoogleFonts.inter(
                         fontSize: 10.5, color: c.coral, letterSpacing: 0.2),
                   ),
                 ] else if (lead.contactNumber != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     lead.contactNumber!,
-                    style: GoogleFonts.jetBrainsMono(
+                    style: GoogleFonts.inter(
                         fontSize: 10.5, color: c.muted, letterSpacing: 0.3),
                   ),
                 ],
@@ -416,7 +416,7 @@ class _StatusChip extends StatelessWidget {
       ),
       child: Text(
         status.label,
-        style: GoogleFonts.interTight(
+        style: GoogleFonts.inter(
           fontSize: isLost ? 12.5 : 11.5,
           fontWeight: isLost ? FontWeight.w700 : FontWeight.w500,
           color: color,
@@ -451,7 +451,7 @@ class _Chip extends StatelessWidget {
           Icon(icon, size: bold ? 13 : 12, color: color),
           const SizedBox(width: 5),
           Text(label,
-              style: GoogleFonts.interTight(
+              style: GoogleFonts.inter(
                   fontSize: bold ? 12.5 : 11.5,
                   fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
                   color: color)),
@@ -506,37 +506,12 @@ class _ProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final img = product.images.isNotEmpty ? product.images.first : null;
-    final isNetwork = img != null && (img.startsWith('http://') || img.startsWith('https://'));
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
           // Thumbnail
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: img == null
-                  ? Container(
-                      color: c.bg3,
-                      child: Icon(Icons.image_not_supported_outlined, size: 20, color: c.faint),
-                    )
-                  : isNetwork
-                      ? Image.network(img, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: c.bg3,
-                            child: Icon(Icons.broken_image_outlined, size: 20, color: c.faint),
-                          ))
-                      : Image.asset(img, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: c.bg3,
-                            child: Icon(Icons.broken_image_outlined, size: 20, color: c.faint),
-                          )),
-            ),
-          ),
+          ProductThumb(product: product, size: 48),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -544,7 +519,7 @@ class _ProductTile extends StatelessWidget {
               children: [
                 Text(
                   product.name,
-                  style: GoogleFonts.interTight(
+                  style: GoogleFonts.inter(
                       fontSize: 13.5, fontWeight: FontWeight.w500, color: c.ink),
                 ),
                 const SizedBox(height: 2),
@@ -552,7 +527,7 @@ class _ProductTile extends StatelessWidget {
                   product.productCode.isNotEmpty
                       ? '${product.productCode}  ·  NRS ${product.currentSellingPrice.toStringAsFixed(0)}'
                       : 'NRS ${product.currentSellingPrice.toStringAsFixed(0)}',
-                  style: GoogleFonts.jetBrainsMono(
+                  style: GoogleFonts.inter(
                       fontSize: 10, color: c.muted, letterSpacing: 0.3),
                 ),
               ],
@@ -593,7 +568,7 @@ class _StockIndicator extends StatelessWidget {
       ),
       child: Text(
         product.stockStatus,
-        style: GoogleFonts.jetBrainsMono(
+        style: GoogleFonts.inter(
             fontSize: 9.5, fontWeight: FontWeight.w600,
             color: color, letterSpacing: 0.5),
       ),
@@ -646,7 +621,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: GoogleFonts.jetBrainsMono(
+      style: GoogleFonts.inter(
           fontSize: 9.5, color: c.muted,
           fontWeight: FontWeight.w500, letterSpacing: 1.4),
     );
@@ -689,13 +664,13 @@ class _Row extends StatelessWidget {
             width: 96,
             child: Text(
               label,
-              style: GoogleFonts.interTight(fontSize: 12.5, color: c.muted),
+              style: GoogleFonts.inter(fontSize: 12.5, color: c.muted),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.interTight(
+              style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: valueColor ?? c.ink,
@@ -714,7 +689,7 @@ class _Row extends StatelessWidget {
               ),
               child: Text(
                 badge!,
-                style: GoogleFonts.jetBrainsMono(
+                style: GoogleFonts.inter(
                     fontSize: 9, fontWeight: FontWeight.w700,
                     color: badgeColor!, letterSpacing: 0.5),
               ),

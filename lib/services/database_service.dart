@@ -44,9 +44,11 @@ class DatabaseService extends ChangeNotifier {
         .orderBy('purchaseDate', descending: true)
         .snapshots()
         .listen((snapshot) {
-      _filaments = snapshot.docs
-          .map((doc) => Filament.fromMap(doc.data()))
-          .toList();
+      _filaments = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['id'] == null) data['id'] = doc.id;
+        return Filament.fromMap(data);
+      }).toList();
       notifyListeners();
     });
   }
@@ -57,9 +59,11 @@ class DatabaseService extends ChangeNotifier {
         .orderBy('name')
         .snapshots()
         .listen((snapshot) {
-      _products = snapshot.docs
-          .map((doc) => Product.fromMap(doc.data()))
-          .toList();
+      _products = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['id'] == null) data['id'] = doc.id;
+        return Product.fromMap(data);
+      }).toList();
       notifyListeners();
     });
   }
@@ -70,9 +74,11 @@ class DatabaseService extends ChangeNotifier {
         .orderBy('saleDate', descending: true)
         .snapshots()
         .listen((snapshot) {
-      _sales = snapshot.docs
-          .map((doc) => Sale.fromMap(doc.data()))
-          .toList();
+      _sales = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['id'] == null) data['id'] = doc.id;
+        return Sale.fromMap(data);
+      }).toList();
       notifyListeners();
     });
   }
@@ -83,22 +89,24 @@ class DatabaseService extends ChangeNotifier {
         .orderBy('date', descending: true)
         .snapshots()
         .listen((snapshot) {
-      _expenses = snapshot.docs
-          .map((doc) => Expense.fromMap(doc.data()))
-          .toList();
+      _expenses = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['id'] == null) data['id'] = doc.id;
+        return Expense.fromMap(data);
+      }).toList();
       notifyListeners();
     });
   }
 
   void _listenToLeads() {
-    _firestore
-        .collection(_leadsCollection)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .listen((snapshot) {
-      _leads = snapshot.docs
-          .map((doc) => Lead.fromMap(doc.data()))
-          .toList();
+    _firestore.collection(_leadsCollection).snapshots().listen((snapshot) {
+      _leads = snapshot.docs.map((doc) {
+        final data = doc.data();
+        // Ensure the document ID is always present even if the field was missing
+        if (data['id'] == null) data['id'] = doc.id;
+        if (data['name'] == null) data['name'] = '';
+        return Lead.fromMap(data);
+      }).toList();
       notifyListeners();
     });
   }
@@ -205,7 +213,7 @@ class DatabaseService extends ChangeNotifier {
     await _firestore
         .collection(_leadsCollection)
         .doc(lead.id)
-        .update(lead.toMap());
+        .set(lead.toFirestoreMap(), SetOptions(merge: true));
   }
 
   Future<void> deleteLead(String id) async {
@@ -245,7 +253,7 @@ class DatabaseService extends ChangeNotifier {
   // Stats
   int get totalFilamentStock => _filaments.fold(0, (sum, f) => sum + f.quantity);
 
-  double get totalSalesAmount => _sales.fold(0.0, (sum, s) => sum + s.price);
+  double get totalSalesAmount => _sales.fold(0.0, (sum, s) => sum + s.totalAmount);
 
   int get totalSalesCount => _sales.length;
 
@@ -256,7 +264,7 @@ class DatabaseService extends ChangeNotifier {
     for (final sale in _sales) {
       final product = getProductById(sale.productId);
       if (product != null) {
-        total += (sale.price - product.costPrice.totalCost);
+        total += (sale.totalAmount - product.costPrice.totalCost * sale.quantity);
       }
     }
     return total;

@@ -86,7 +86,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   const SizedBox(width: 8),
                   Text('Add Expense',
-                      style: GoogleFonts.newsreader(
+                      style: GoogleFonts.inter(
                           fontSize: 20, fontWeight: FontWeight.w500,
                           color: c.ink, letterSpacing: -0.4)),
                 ],
@@ -130,7 +130,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(DateFormat('MMM d, yyyy').format(_date),
-                                      style: GoogleFonts.interTight(fontSize: 13.5, color: c.ink)),
+                                      style: GoogleFonts.inter(fontSize: 13.5, color: c.ink)),
                                   Icon(Icons.calendar_today_outlined, size: 16, color: c.muted),
                                 ],
                               ),
@@ -177,7 +177,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               child: Row(
                 children: [
                   Text('⌘S save  ·  esc discard',
-                      style: GoogleFonts.jetBrainsMono(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
+                      style: GoogleFonts.inter(fontSize: 10, color: c.muted, letterSpacing: 0.5)),
                   const Spacer(),
                   BLButton(label: 'Cancel', kind: BLButtonKind.ghost, onPressed: () => context.pop()),
                   const SizedBox(width: 8),

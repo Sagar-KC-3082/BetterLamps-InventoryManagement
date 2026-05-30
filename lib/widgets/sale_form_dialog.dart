@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -7,6 +6,7 @@ import '../models/product.dart';
 import '../models/sale.dart';
 import '../services/database_service.dart';
 import '../theme/app_theme.dart';
+import 'bl_components.dart';
 
 void showSaleDialog(BuildContext context, [Sale? sale]) {
   showGeneralDialog(
@@ -45,7 +45,9 @@ class SaleFormDialog extends StatefulWidget {
 class _SaleFormDialogState extends State<SaleFormDialog> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedProductId;
-  String? _selectedSource;
+  SaleSource _selectedSource = SaleSource.instagramAd;
+  PaymentMethod _paymentMethod = PaymentMethod.bankTransfer;
+  int _quantity = 1;
   String _accountSettledIn = 'Sagar';
   bool _isFollowedUp = false;
   late TextEditingController _priceController;
@@ -56,20 +58,13 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
   late TextEditingController _notesController;
   late DateTime _saleDate;
 
-  final List<String> _sourceOptions = [
-    'Instagram Ad',
-    'Personal Relation',
-    'From Insta Feed (No Ad)',
-    'Walking Customer',
-    'Referral',
-    'Other',
-  ];
-
   @override
   void initState() {
     super.initState();
     _selectedProductId = widget.sale?.productId;
-    _selectedSource = widget.sale?.source;
+    _selectedSource = widget.sale?.source ?? SaleSource.instagramAd;
+    _paymentMethod = widget.sale?.paymentMethod ?? PaymentMethod.bankTransfer;
+    _quantity = widget.sale?.quantity ?? 1;
     _accountSettledIn = widget.sale?.accountSettledIn ?? 'Sagar';
     _isFollowedUp = widget.sale?.isFollowedUp ?? false;
     _priceController =
@@ -185,41 +180,11 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
                             value: product.id,
                             child: Row(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: product.images.isNotEmpty
-                                      ? Image.memory(
-                                          base64Decode(product.images.first),
-                                          width: 32,
-                                          height: 32,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              Container(
-                                            width: 32,
-                                            height: 32,
-                                            color: context.surfaceColor,
-                                            child: Icon(
-                                              Icons.image_not_supported_outlined,
-                                              size: 16,
-                                              color: context.textSecondary,
-                                            ),
-                                          ),
-                                        )
-                                      : Container(
-                                          width: 32,
-                                          height: 32,
-                                          color: context.surfaceColor,
-                                          child: Icon(
-                                            Icons.image_not_supported_outlined,
-                                            size: 16,
-                                            color: context.textSecondary,
-                                          ),
-                                        ),
-                                ),
+                                ProductThumb(product: product, size: 32, radius: 4),
                                 const SizedBox(width: 12),
-                                Expanded(
+                                Flexible(
                                   child: Text(
-                                    '${product.name} (NRS ${product.currentSellingPrice.toStringAsFixed(0)})',
+                                    '${product.name}  ·  NRS ${product.currentSellingPrice.toStringAsFixed(0)}',
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -248,7 +213,7 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
                             child: TextFormField(
                               controller: _priceController,
                               decoration: const InputDecoration(
-                                labelText: 'Sale Price',
+                                labelText: 'Price per unit',
                                 prefixText: 'NRS ',
                               ),
                               keyboardType: TextInputType.number,
@@ -279,6 +244,32 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
                                 child: Text(DateFormat('MMM d, yyyy').format(_saleDate)),
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Text('Quantity:'),
+                          const SizedBox(width: 16),
+                          IconButton(
+                            icon: const Icon(Icons.remove, size: 18),
+                            onPressed: _quantity > 1
+                                ? () => setState(() => _quantity--)
+                                : null,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                          const SizedBox(width: 12),
+                          Text('$_quantity',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(width: 12),
+                          IconButton(
+                            icon: const Icon(Icons.add, size: 18),
+                            onPressed: () => setState(() => _quantity++),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                           ),
                         ],
                       ),
@@ -332,19 +323,40 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
                       _SectionLabel('Marketing & Feedback'),
                       const SizedBox(height: 12),
                       
-                      DropdownButtonFormField<String>(
-                        value: _selectedSource,
-                        decoration: const InputDecoration(
-                          labelText: 'Source',
-                          prefixIcon: Icon(Icons.campaign_outlined, size: 20),
-                        ),
-                        items: _sourceOptions.map((source) {
-                          return DropdownMenuItem(
-                            value: source,
-                            child: Text(source),
-                          );
-                        }).toList(),
-                        onChanged: (value) => setState(() => _selectedSource = value),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<SaleSource>(
+                              value: _selectedSource,
+                              decoration: const InputDecoration(
+                                labelText: 'Source',
+                                prefixIcon: Icon(Icons.campaign_outlined, size: 20),
+                              ),
+                              items: SaleSource.values
+                                  .map((s) => DropdownMenuItem(
+                                      value: s, child: Text(s.label)))
+                                  .toList(),
+                              onChanged: (v) =>
+                                  setState(() => _selectedSource = v ?? _selectedSource),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: DropdownButtonFormField<PaymentMethod>(
+                              value: _paymentMethod,
+                              decoration: const InputDecoration(
+                                labelText: 'Payment method',
+                                prefixIcon: Icon(Icons.account_balance_wallet_outlined, size: 20),
+                              ),
+                              items: PaymentMethod.values
+                                  .map((m) => DropdownMenuItem(
+                                      value: m, child: Text(m.label)))
+                                  .toList(),
+                              onChanged: (v) =>
+                                  setState(() => _paymentMethod = v ?? _paymentMethod),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
@@ -493,9 +505,11 @@ class _SaleFormDialogState extends State<SaleFormDialog> {
     final sale = Sale(
       id: widget.sale?.id ?? const Uuid().v4(),
       productId: _selectedProductId!,
+      quantity: _quantity,
       customer: customer,
       saleDate: _saleDate,
       price: double.parse(_priceController.text),
+      paymentMethod: _paymentMethod,
       source: _selectedSource,
       isFollowedUp: _isFollowedUp,
       accountSettledIn: _accountSettledIn,

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +5,7 @@ import '../models/sale.dart';
 import '../models/product.dart';
 import '../services/database_service.dart';
 import '../theme/app_theme.dart';
+import 'bl_components.dart';
 import 'sale_form_dialog.dart';
 
 void showSaleDetailsSheet(BuildContext context, Sale sale, Product? product) {
@@ -82,8 +82,8 @@ class SaleDetailsSheet extends StatelessWidget {
     double? profit;
     double? margin;
     if (product != null) {
-      profit = sale.price - product!.costPrice.totalCost;
-      margin = sale.price > 0 ? (profit / sale.price * 100) : 0;
+      profit = sale.totalAmount - product!.costPrice.totalCost * sale.quantity;
+      margin = sale.totalAmount > 0 ? (profit / sale.totalAmount * 100) : 0;
     }
 
     return Material(
@@ -182,25 +182,7 @@ class SaleDetailsSheet extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: context.surfaceColor,
-                              border: Border.all(color: context.borderColor),
-                            ),
-                            child: product != null && product!.images.isNotEmpty
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.memory(
-                                      base64Decode(product!.images.first),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : Icon(Icons.image_not_supported_outlined, 
-                                    color: context.textSecondary),
-                          ),
+                          ProductThumb(product: product, size: 60, radius: 8),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
@@ -317,21 +299,27 @@ class SaleDetailsSheet extends StatelessWidget {
                                     ),
                                     _InfoRow(
                                       icon: Icons.sell_outlined,
-                                      label: 'Sale Price',
-                                      value: 'NRS ${sale.price.toStringAsFixed(0)}',
+                                      label: sale.quantity > 1
+                                          ? 'Price (${sale.quantity}× NRS ${sale.price.toStringAsFixed(0)})'
+                                          : 'Sale Price',
+                                      value: 'NRS ${sale.totalAmount.toStringAsFixed(0)}',
                                       isBold: true,
+                                    ),
+                                    _InfoRow(
+                                      icon: Icons.payment_outlined,
+                                      label: 'Payment Method',
+                                      value: sale.paymentMethod.label,
                                     ),
                                     _InfoRow(
                                       icon: Icons.account_balance_wallet_outlined,
                                       label: 'Payment Settled By',
                                       value: sale.accountSettledIn,
                                     ),
-                                    if (sale.source?.isNotEmpty ?? false)
-                                      _InfoRow(
-                                        icon: Icons.campaign_outlined,
-                                        label: 'Source',
-                                        value: sale.source!,
-                                      ),
+                                    _InfoRow(
+                                      icon: Icons.campaign_outlined,
+                                      label: 'Source',
+                                      value: sale.source.label,
+                                    ),
                                     _InfoRow(
                                       icon: sale.isFollowedUp ? Icons.check_circle_outline : Icons.radio_button_unchecked,
                                       label: 'Followed Up',
